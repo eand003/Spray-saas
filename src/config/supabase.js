@@ -12,11 +12,65 @@ const isConfigured =
   supabaseUrl.trim() !== '' &&
   supabaseAnonKey.trim() !== '';
 
+// =============================================================================
+// TABLE NAME MAPPING: Frontend generic names → Supabase sp_* prefixed tables
+// This allows all components to use plain names (e.g. 'customers') while
+// the real Supabase project stores data in sp_customers, sp_leads, etc.
+// The bico_saas original tables are NEVER touched.
+// =============================================================================
+const SP_TABLE_MAP = {
+  'profiles':              'sp_profiles',
+  'organizations':         'sp_partners',
+  'partners':              'sp_partners',
+  'customers':             'sp_customers',
+  'customer_contacts':     'sp_customer_contacts',
+  'visits':                'sp_visits',
+  'visit_attachments':     'sp_visit_attachments',
+  'farms':                 'sp_customers',      // farms merged into customers (city/lat/lon)
+  'sprayers':              'sp_machines',
+  'machines':              'sp_machines',
+  'kits':                  'sp_kits',
+  'leads':                 'sp_leads',
+  'deals':                 'sp_deals',
+  'deal_activities':       'sp_deal_activities',
+  'stock_items':           'sp_stock_items',
+  'stock_movements':       'sp_stock_movements',
+  'sales':                 'sp_sales',
+  'accounts_receivable':   'sp_accounts_receivable',
+  'accounts_payable':      'sp_accounts_payable',
+  'commissions':           'sp_commissions',
+};
+
+/**
+ * Wraps the Supabase client's `from()` method to transparently
+ * remap generic table names to sp_* prefixed table names.
+ * All other methods (auth, storage, rpc) pass through unchanged.
+ */
+function createSpWrappedClient(client) {
+  return new Proxy(client, {
+    get(target, prop) {
+      if (prop === 'from') {
+        return (tableName) => {
+          const mappedTable = SP_TABLE_MAP[tableName] || tableName;
+          if (mappedTable !== tableName) {
+            console.debug(`[sp_map] ${tableName} → ${mappedTable}`);
+          }
+          return target.from(mappedTable);
+        };
+      }
+      // Pass through auth, storage, rpc, etc.
+      const val = target[prop];
+      return typeof val === 'function' ? val.bind(target) : val;
+    }
+  });
+}
+
 export let supabase;
 
 if (isConfigured) {
-  supabase = createClient(supabaseUrl, supabaseAnonKey);
-  console.log('🔌 Connected to Supabase backend successfully!');
+  const rawClient = createClient(supabaseUrl, supabaseAnonKey);
+  supabase = createSpWrappedClient(rawClient);
+  console.log('🔌 Connected to Supabase (bico_saas project) — tables mapped to sp_* prefix.');
 } else {
   console.warn('⚠️ Supabase credentials not found or incomplete. Falling back to LocalStorage Mock DB for visual testing.');
 

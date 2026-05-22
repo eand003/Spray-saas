@@ -15,15 +15,19 @@ import {
   Percent, 
   Layers,
   ChevronRight,
-  AlertTriangle
+  AlertTriangle,
+  Edit2,
+  Trash2,
+  ShoppingBag,
+  Lock
 } from 'lucide-react';
 
 const Finance = ({ user }) => {
   const isUserAdmin = user?.user_metadata?.role === 'admin';
   
   // Tabs management
-  // Admin tabs: 'fluxo', 'receber', 'pagar', 'comissoes'
-  // Seller tabs: 'simulador', 'minhas_comissoes'
+  // Admin tabs: 'fluxo', 'vendas', 'receber', 'pagar', 'comissoes'
+  // Seller tabs: 'simulador', 'minhas_vendas', 'minhas_comissoes'
   const [activeTab, setActiveTab] = useState(isUserAdmin ? 'fluxo' : 'simulador');
   
   // Data States
@@ -38,6 +42,10 @@ const Finance = ({ user }) => {
   // Form Modals
   const [showSaleModal, setShowSaleModal] = useState(false);
   const [showExpenseModal, setShowExpenseModal] = useState(false);
+
+  // Edit mode state
+  const [editingSaleId, setEditingSaleId] = useState(null); // ID of sale being edited (null = new sale)
+  const [deleteConfirmSaleId, setDeleteConfirmSaleId] = useState(null); // Sale ID awaiting delete confirmation
 
   // Form States (New Sale)
   const [newSale, setNewSale] = useState({
@@ -353,7 +361,7 @@ const Finance = ({ user }) => {
     .filter(c => c.status === 'paid')
     .reduce((sum, c) => sum + Number(c.commission_amount), 0);
 
-  // Business Action: Save a New Sale
+  // Business Action: Save a New Sale (or Update an existing one)
   const handleSaveSale = async (e) => {
     if (e) e.preventDefault();
     if (!newSale.customer_id) {
@@ -383,7 +391,6 @@ const Finance = ({ user }) => {
       const sellerId = isUserAdmin ? (sellers[0]?.id || user.id) : user.id;
       const nozzles = Number(newSale.nozzles_count); // Electrostatic Modules
 
-      // 1. Insert Sale record with full technical machinery specifications
       const saleRecord = {
         customer_id: newSale.customer_id,
         seller_id: sellerId,
@@ -403,13 +410,24 @@ const Finance = ({ user }) => {
         notes: newSale.notes || `Venda comercial do kit. Máquina com ${newSale.physical_nozzles_count} bicos reais, barra de ${newSale.boom_width_m}m, espaçamento de ${newSale.nozzle_spacing_cm}cm. Engenharia otimizou para ${nozzles} módulos isoladores eletrostáticos.`
       };
 
-      const { data: savedSaleData, error: saleErr } = await supabase.from('sales').insert(saleRecord).select();
-      if (saleErr) throw saleErr;
-      const savedSale = savedSaleData[0];
+      let targetSaleId;
 
-      // 2. Generate Accounts Receivable installments from dynamic grid
+      if (editingSaleId) {
+        // === UPDATE MODE: replace sale and regenerate installments/commissions ===
+        await supabase.from('commissions').delete().eq('sale_id', editingSaleId);
+        await supabase.from('accounts_receivable').delete().eq('sale_id', editingSaleId);
+        await supabase.from('sales').update(saleRecord).eq('id', editingSaleId);
+        targetSaleId = editingSaleId;
+      } else {
+        // === INSERT MODE: create new sale ===
+        const { data: savedSaleData, error: saleErr } = await supabase.from('sales').insert(saleRecord).select();
+        if (saleErr) throw saleErr;
+        targetSaleId = savedSaleData[0].id;
+      }
+
+      // Generate Accounts Receivable installments from dynamic grid
       const newReceivables = installments.map((inst, index) => ({
-        sale_id: savedSale.id,
+        sale_id: targetSaleId,
         customer_id: newSale.customer_id,
         installment_number: index + 1,
         amount: inst.amount,
@@ -419,19 +437,18 @@ const Finance = ({ user }) => {
         notes: `Parcela ${index + 1}/${installments.length} (${inst.label || 'Venda'}) da venda comercial.`
       }));
 
-      // 3. Generate Seller Commission installments (10% rate on liquidity)
+      // Generate Seller Commission installments (10% rate on liquidity)
       const newCommissions = installments.map((inst, index) => {
         const baseInstAmount = inst.amount * (1 - TAX_RATE);
         const commInstAmount = baseInstAmount * COMMISSION_RATE;
-
         return {
-          sale_id: savedSale.id,
+          sale_id: targetSaleId,
           seller_id: sellerId,
           commission_type: 'percentage',
           commission_rate: COMMISSION_RATE,
           base_amount: baseInstAmount,
           commission_amount: commInstAmount,
-          status: 'expected', // Expected until client pays installment
+          status: 'expected',
           notes: `Comissão prevista para parcela ${index + 1}/${installments.length} (${inst.label || 'Venda'}).`
         };
       });
@@ -439,8 +456,13 @@ const Finance = ({ user }) => {
       await supabase.from('accounts_receivable').insert(newReceivables);
       await supabase.from('commissions').insert(newCommissions);
 
-      alert('Venda registrada com sucesso! O cronograma de parcelas e as comissões foram configurados de acordo com os prazos agrícolas.');
+      const msg = editingSaleId
+        ? 'Venda atualizada com sucesso! O cronograma de parcelas e comissões foi regenerado.'
+        : 'Venda registrada com sucesso! O cronograma de parcelas e as comissões foram configurados de acordo com os prazos agrícolas.';
+      alert(msg);
+
       setShowSaleModal(false);
+      setEditingSaleId(null);
       
       // Reset Form State
       setNewSale({
@@ -459,7 +481,7 @@ const Finance = ({ user }) => {
 
       fetchFinancialData();
     } catch (err) {
-      console.error('Erro ao cadastrar venda:', err);
+      console.error('Erro ao salvar venda:', err);
       alert('Ocorreu um erro ao salvar a venda.');
     } finally {
       setLoading(false);
@@ -564,6 +586,80 @@ const Finance = ({ user }) => {
     }
   };
 
+  // Business Action: Delete a Sale (cascade to receivables & commissions)
+  const handleDeleteSale = async (saleId) => {
+    // Safety check: block if any installment has been received
+    const saleReceivables = receivables.filter(r => r.sale_id === saleId);
+    const hasReceivedInstallment = saleReceivables.some(r => r.status === 'received');
+    if (hasReceivedInstallment) {
+      alert('Esta venda possui parcelas já recebidas e não pode ser excluída.\n\nEntre em contato com o administrador para fazer os ajustes necessários.');
+      setDeleteConfirmSaleId(null);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      // Cascade delete: commissions → receivables → sale
+      await supabase.from('commissions').delete().eq('sale_id', saleId);
+      await supabase.from('accounts_receivable').delete().eq('sale_id', saleId);
+      await supabase.from('sales').delete().eq('id', saleId);
+      setDeleteConfirmSaleId(null);
+      alert('Venda excluída com sucesso!');
+      fetchFinancialData();
+    } catch (err) {
+      console.error('Erro ao excluir venda:', err);
+      alert('Ocorreu um erro ao excluir a venda.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Business Action: Load a Sale into the form for editing
+  const handleEditSale = (sale) => {
+    // Safety check: block if any installment has been received
+    const saleReceivables = receivables.filter(r => r.sale_id === sale.id);
+    const hasReceivedInstallment = saleReceivables.some(r => r.status === 'received');
+    if (hasReceivedInstallment) {
+      alert('Esta venda possui parcelas já recebidas e não pode ser editada.\n\nEntre em contato com o administrador para fazer os ajustes necessários.');
+      return;
+    }
+
+    // Load sale data into the form
+    setEditingSaleId(sale.id);
+    setNewSale({
+      customer_id: sale.customer_id || '',
+      pricing_mode: sale.pricing_mode || 'per_nozzle',
+      physical_nozzles_count: sale.physical_nozzles_count || 60,
+      boom_width_m: sale.boom_width_m || 30,
+      nozzle_spacing_cm: sale.nozzle_spacing_cm || 50,
+      nozzles_count: sale.nozzles_count || 60,
+      price_per_nozzle: sale.price_per_nozzle || 1500,
+      flat_rate_amount: sale.total_amount || 90000,
+      payment_terms: sale.payment_terms || '30_60_90',
+      payment_method: sale.payment_method || 'Pix / Boleto',
+      notes: sale.notes || ''
+    });
+
+    // Rebuild installments from the existing receivables
+    const linkedReceivables = receivables
+      .filter(r => r.sale_id === sale.id)
+      .sort((a, b) => a.installment_number - b.installment_number);
+
+    if (linkedReceivables.length > 0) {
+      const rebuiltInstallments = linkedReceivables.map((r, idx) => ({
+        number: idx + 1,
+        label: r.notes ? r.notes.replace(/^Parcela \d+\/\d+ \((.*)\).*$/, '$1') : `Parcela ${idx + 1}`,
+        percentage: parseFloat(((r.amount / sale.total_amount) * 100).toFixed(2)),
+        amount: r.amount,
+        due_date: r.due_date,
+        notes: r.notes || ''
+      }));
+      setInstallments(rebuiltInstallments);
+    }
+
+    setShowSaleModal(true);
+  };
+
   // Admin Action: Approve / Release a Seller's Commission manually
   const handleReleaseCommission = async (commId) => {
     try {
@@ -645,6 +741,12 @@ const Finance = ({ user }) => {
               <TrendingUp size={16} /> Fluxo de Caixa
             </button>
             <button 
+              className={`tab-btn ${activeTab === 'vendas' ? 'active' : ''}`}
+              onClick={() => setActiveTab('vendas')}
+            >
+              <ShoppingBag size={16} /> Vendas
+            </button>
+            <button 
               className={`tab-btn ${activeTab === 'receber' ? 'active' : ''}`}
               onClick={() => setActiveTab('receber')}
             >
@@ -670,6 +772,12 @@ const Finance = ({ user }) => {
               onClick={() => setActiveTab('simulador')}
             >
               <Calculator size={16} /> Simulador de Vendas
+            </button>
+            <button 
+              className={`tab-btn ${activeTab === 'minhas_vendas' ? 'active' : ''}`}
+              onClick={() => setActiveTab('minhas_vendas')}
+            >
+              <ShoppingBag size={16} /> Minhas Vendas
             </button>
             <button 
               className={`tab-btn ${activeTab === 'minhas_comissoes' ? 'active' : ''}`}
@@ -1022,6 +1130,224 @@ const Finance = ({ user }) => {
                       </div>
                     </div>
                   ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ==================== ADMIN TAB: VENDAS ==================== */}
+          {isUserAdmin && activeTab === 'vendas' && (
+            <div>
+              <div className="flex justify-between align-center" style={{ marginBottom: '16px' }}>
+                <h2>Histórico de Vendas Comerciais</h2>
+                <button className="btn btn-primary" onClick={() => { setEditingSaleId(null); setShowSaleModal(true); }}>
+                  <Plus size={16} /> Nova Venda
+                </button>
+              </div>
+
+              {sales.length === 0 ? (
+                <p style={{ textAlign: 'center', color: 'var(--gray-500)', padding: '24px' }}>Nenhuma venda registrada.</p>
+              ) : (
+                <div className="mobile-card-list">
+                  {sales.map(sale => {
+                    const saleReceivables = receivables.filter(r => r.sale_id === sale.id);
+                    const hasReceived = saleReceivables.some(r => r.status === 'received');
+                    const isEditable = !hasReceived;
+                    const isConfirmingDelete = deleteConfirmSaleId === sale.id;
+                    return (
+                      <div key={sale.id} className="mobile-card" style={{ borderLeft: `4px solid ${hasReceived ? 'var(--status-won)' : 'var(--primary)'}` }}>
+                        <div className="flex justify-between align-center">
+                          <div>
+                            <span style={{ fontWeight: 700, fontSize: '15px', display: 'block' }}>
+                              {getCustomerName(sale.customer_id)}
+                            </span>
+                            <span style={{ fontSize: '12px', color: 'var(--gray-500)' }}>
+                              {getSellerName(sale.seller_id)} • {formatDate(sale.sale_date)} • {sale.physical_nozzles_count} bicos / {sale.boom_width_m}m barra / {sale.nozzle_spacing_cm}cm espaç.
+                            </span>
+                          </div>
+                          <div style={{ textAlign: 'right' }}>
+                            <span style={{ fontWeight: 800, fontSize: '16px', color: 'var(--primary)', display: 'block' }}>
+                              {formatCurrency(sale.total_amount)}
+                            </span>
+                            <span style={{ fontSize: '11px', color: 'var(--gray-400)' }}>
+                              {sale.pricing_mode === 'per_nozzle' ? `${sale.nozzles_count} módulos × ${formatCurrency(sale.price_per_nozzle)}` : 'Porteira Fechada'}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex justify-between align-center" style={{ marginTop: '12px', borderTop: '1px solid var(--gray-100)', paddingTop: '10px' }}>
+                          <div className="flex align-center gap-2">
+                            <span className="status-badge" style={{ backgroundColor: hasReceived ? 'var(--status-won-bg)' : '#f0fdf4', color: hasReceived ? 'var(--status-won)' : 'var(--primary)', fontSize: '11px' }}>
+                              {hasReceived ? 'Parcialmente/Total Recebido' : 'Em Aberto'}
+                            </span>
+                            {!isEditable && (
+                              <span style={{ fontSize: '11px', color: 'var(--gray-400)', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                                <Lock size={11} /> Protegida
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex gap-2">
+                            {isEditable && !isConfirmingDelete && (
+                              <button
+                                className="btn"
+                                onClick={() => handleEditSale(sale)}
+                                style={{ padding: '5px 10px', fontSize: '12px', height: 'auto', display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe' }}
+                              >
+                                <Edit2 size={13} /> Editar
+                              </button>
+                            )}
+                            {isEditable && !isConfirmingDelete && (
+                              <button
+                                className="btn"
+                                onClick={() => setDeleteConfirmSaleId(sale.id)}
+                                style={{ padding: '5px 10px', fontSize: '12px', height: 'auto', display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: '#fee2e2', color: '#991b1b', border: '1px solid #fca5a5' }}
+                              >
+                                <Trash2 size={13} /> Excluir
+                              </button>
+                            )}
+                            {isConfirmingDelete && (
+                              <div className="flex gap-2 align-center" style={{ backgroundColor: '#fff7ed', padding: '6px 10px', borderRadius: 'var(--radius)', border: '1px solid #fed7aa' }}>
+                                <span style={{ fontSize: '12px', color: '#c2410c', fontWeight: 600 }}>Confirmar exclusão?</span>
+                                <button
+                                  className="btn"
+                                  onClick={() => handleDeleteSale(sale.id)}
+                                  style={{ padding: '4px 10px', fontSize: '12px', height: 'auto', backgroundColor: '#ef4444', color: '#fff', border: 'none' }}
+                                >
+                                  Sim, Excluir
+                                </button>
+                                <button
+                                  className="btn"
+                                  onClick={() => setDeleteConfirmSaleId(null)}
+                                  style={{ padding: '4px 10px', fontSize: '12px', height: 'auto', backgroundColor: 'var(--gray-200)', color: 'var(--gray-700)', border: 'none' }}
+                                >
+                                  Cancelar
+                                </button>
+                              </div>
+                            )}
+                            {!isEditable && (
+                              <span style={{ fontSize: '11px', color: 'var(--gray-400)', fontStyle: 'italic', display: 'flex', alignItems: 'center' }}>Contate o Admin para alterações</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ==================== SELLER TAB: MINHAS VENDAS ==================== */}
+          {!isUserAdmin && activeTab === 'minhas_vendas' && (
+            <div>
+              <div className="flex justify-between align-center" style={{ marginBottom: '16px' }}>
+                <div>
+                  <h2>Minhas Vendas Comerciais</h2>
+                  <p style={{ color: 'var(--gray-500)', fontSize: '12px', margin: '2px 0 0' }}>
+                    Você pode editar ou excluir vendas desde que nenhuma parcela tenha sido recebida.
+                  </p>
+                </div>
+                <button className="btn btn-primary" onClick={() => { setEditingSaleId(null); setShowSaleModal(true); }}>
+                  <Plus size={16} /> Nova Venda
+                </button>
+              </div>
+
+              {sales.filter(s => s.seller_id === user?.id).length === 0 ? (
+                <p style={{ textAlign: 'center', color: 'var(--gray-500)', padding: '24px' }}>Você ainda não registrou nenhuma venda.</p>
+              ) : (
+                <div className="mobile-card-list">
+                  {sales.filter(s => s.seller_id === user?.id).map(sale => {
+                    const saleReceivables = receivables.filter(r => r.sale_id === sale.id);
+                    const hasReceived = saleReceivables.some(r => r.status === 'received');
+                    const isEditable = !hasReceived;
+                    const isConfirmingDelete = deleteConfirmSaleId === sale.id;
+                    return (
+                      <div key={sale.id} className="mobile-card" style={{ borderLeft: `4px solid ${hasReceived ? 'var(--status-won)' : 'var(--primary)'}` }}>
+                        <div className="flex justify-between align-center">
+                          <div>
+                            <span style={{ fontWeight: 700, fontSize: '15px', display: 'block' }}>
+                              {getCustomerName(sale.customer_id)}
+                            </span>
+                            <span style={{ fontSize: '12px', color: 'var(--gray-500)' }}>
+                              {formatDate(sale.sale_date)} • {sale.physical_nozzles_count} bicos reais / {sale.boom_width_m}m barra
+                            </span>
+                          </div>
+                          <div style={{ textAlign: 'right' }}>
+                            <span style={{ fontWeight: 800, fontSize: '16px', color: 'var(--primary)', display: 'block' }}>
+                              {formatCurrency(sale.total_amount)}
+                            </span>
+                            <span style={{ fontSize: '11px', color: 'var(--gray-400)' }}>
+                              {sale.pricing_mode === 'per_nozzle' ? `${sale.nozzles_count} módulos × ${formatCurrency(sale.price_per_nozzle)}` : 'Porteira Fechada'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Installments quick summary */}
+                        {saleReceivables.length > 0 && (
+                          <div style={{ marginTop: '8px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                            {saleReceivables.map(r => (
+                              <span key={r.id} style={{ fontSize: '11px', padding: '2px 7px', borderRadius: '12px', backgroundColor: r.status === 'received' ? '#dcfce7' : '#f1f5f9', color: r.status === 'received' ? 'var(--status-won)' : 'var(--gray-600)', border: '1px solid', borderColor: r.status === 'received' ? '#bbf7d0' : '#e2e8f0' }}>
+                                Parc.{r.installment_number} {formatCurrency(r.amount)} {r.status === 'received' ? '✓' : `(${formatDate(r.due_date)})`}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="flex justify-between align-center" style={{ marginTop: '12px', borderTop: '1px solid var(--gray-100)', paddingTop: '10px' }}>
+                          <div className="flex align-center gap-2">
+                            {!isEditable ? (
+                              <span style={{ fontSize: '12px', color: 'var(--gray-500)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <Lock size={13} /> Parcela recebida — Entre em contato com o admin para alterações.
+                              </span>
+                            ) : (
+                              <span style={{ fontSize: '12px', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                ✔ Editável
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex gap-2">
+                            {isEditable && !isConfirmingDelete && (
+                              <button
+                                className="btn"
+                                onClick={() => handleEditSale(sale)}
+                                style={{ padding: '5px 10px', fontSize: '12px', height: 'auto', display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe' }}
+                              >
+                                <Edit2 size={13} /> Editar
+                              </button>
+                            )}
+                            {isEditable && !isConfirmingDelete && (
+                              <button
+                                className="btn"
+                                onClick={() => setDeleteConfirmSaleId(sale.id)}
+                                style={{ padding: '5px 10px', fontSize: '12px', height: 'auto', display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: '#fee2e2', color: '#991b1b', border: '1px solid #fca5a5' }}
+                              >
+                                <Trash2 size={13} /> Excluir
+                              </button>
+                            )}
+                            {isConfirmingDelete && (
+                              <div className="flex gap-2 align-center" style={{ backgroundColor: '#fff7ed', padding: '6px 10px', borderRadius: 'var(--radius)', border: '1px solid #fed7aa' }}>
+                                <span style={{ fontSize: '12px', color: '#c2410c', fontWeight: 600 }}>Confirmar exclusão?</span>
+                                <button
+                                  className="btn"
+                                  onClick={() => handleDeleteSale(sale.id)}
+                                  style={{ padding: '4px 10px', fontSize: '12px', height: 'auto', backgroundColor: '#ef4444', color: '#fff', border: 'none' }}
+                                >
+                                  Sim, Excluir
+                                </button>
+                                <button
+                                  className="btn"
+                                  onClick={() => setDeleteConfirmSaleId(null)}
+                                  style={{ padding: '4px 10px', fontSize: '12px', height: 'auto', backgroundColor: 'var(--gray-200)', color: 'var(--gray-700)', border: 'none' }}
+                                >
+                                  Cancelar
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -1594,14 +1920,23 @@ const Finance = ({ user }) => {
         </>
       )}
 
-      {/* ==================== FORM MODAL: REGISTER SALE (ADMIN ONLY) ==================== */}
+      {/* ==================== FORM MODAL: REGISTER/EDIT SALE ==================== */}
       {showSaleModal && (
         <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <div className="modal-content card" style={{ width: '90%', maxWidth: '600px', padding: '24px', backgroundColor: '#fff', maxHeight: '95vh', overflowY: 'auto' }}>
             <div className="flex justify-between align-center" style={{ marginBottom: '20px', borderBottom: '1px solid var(--gray-100)', paddingBottom: '12px' }}>
-              <h2 style={{ fontSize: '18px', margin: 0, color: 'var(--primary)', fontWeight: 700 }}>Lançar Venda Técnica Comercial</h2>
-              <button className="tab-btn" onClick={() => setShowSaleModal(false)} style={{ fontSize: '20px', padding: 0 }}>&times;</button>
+              <h2 style={{ fontSize: '18px', margin: 0, color: editingSaleId ? '#1d4ed8' : 'var(--primary)', fontWeight: 700 }}>
+                {editingSaleId ? <><Edit2 size={18} style={{ display: 'inline', marginRight: '6px' }} />Editar Venda Comercial</> : 'Lançar Venda Técnica Comercial'}
+              </h2>
+              <button className="tab-btn" onClick={() => { setShowSaleModal(false); setEditingSaleId(null); }} style={{ fontSize: '20px', padding: 0 }}>&times;</button>
             </div>
+
+            {editingSaleId && (
+              <div style={{ backgroundColor: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 'var(--radius)', padding: '10px 14px', marginBottom: '16px', fontSize: '13px', color: '#1d4ed8', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Edit2 size={14} />
+                <span>Modo de Edição: As parcelas e comissões anteriores serão substituídas ao salvar.</span>
+              </div>
+            )}
 
             <form onSubmit={handleSaveSale}>
               {/* Cliente */}
@@ -1887,13 +2222,14 @@ const Finance = ({ user }) => {
               </div>
 
               <div className="flex justify-end gap-3" style={{ borderTop: '1px solid var(--gray-100)', paddingTop: '16px' }}>
-                <button type="button" className="btn btn-outline" onClick={() => setShowSaleModal(false)}>Cancelar</button>
+                <button type="button" className="btn btn-outline" onClick={() => { setShowSaleModal(false); setEditingSaleId(null); }}>Cancelar</button>
                 <button 
                   type="submit" 
                   className="btn btn-primary" 
                   disabled={!isPercentValid}
+                  style={{ backgroundColor: editingSaleId ? '#1d4ed8' : undefined }}
                 >
-                  Gravar Venda
+                  {editingSaleId ? 'Salvar Alterações' : 'Gravar Venda'}
                 </button>
               </div>
             </form>
