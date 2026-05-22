@@ -26,7 +26,7 @@ const SP_TABLE_MAP = {
   'customer_contacts':     'sp_customer_contacts',
   'visits':                'sp_visits',
   'visit_attachments':     'sp_visit_attachments',
-  'farms':                 'sp_customers',      // farms merged into customers (city/lat/lon)
+  'farms':                 'sp_farms',
   'sprayers':              'sp_machines',
   'machines':              'sp_machines',
   'kits':                  'sp_kits',
