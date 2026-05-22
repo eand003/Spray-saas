@@ -25,7 +25,7 @@ const Dashboard = ({ user, onQuickAction, setCurrentTab }) => {
       setLoading(true);
       
       // Fetch Leads
-      let leadsQuery = supabase.from('leads').select('*');
+      let leadsQuery = supabase.from('leads').select('*').eq('is_deleted', false);
       if (!isUserAdmin) {
         leadsQuery = leadsQuery.eq('owner_id', user.id);
       }
@@ -33,7 +33,7 @@ const Dashboard = ({ user, onQuickAction, setCurrentTab }) => {
       const leadsCount = leadsData?.length || 0;
 
       // Fetch Customers
-      let customersQuery = supabase.from('customers').select('*');
+      let customersQuery = supabase.from('customers').select('*').eq('is_deleted', false);
       if (!isUserAdmin) {
         customersQuery = customersQuery.eq('owner_id', user.id);
       }
@@ -41,7 +41,7 @@ const Dashboard = ({ user, onQuickAction, setCurrentTab }) => {
       const customersCount = customersData?.length || 0;
 
       // Fetch Visits
-      let visitsQuery = supabase.from('visits').select('*');
+      let visitsQuery = supabase.from('visits').select('*').eq('is_deleted', false);
       if (!isUserAdmin) {
         visitsQuery = visitsQuery.eq('owner_id', user.id);
       }
@@ -79,7 +79,7 @@ const Dashboard = ({ user, onQuickAction, setCurrentTab }) => {
       setUpcomingReturns(returns);
 
       // Process Recent Visits
-      let recentVisitsQuery = supabase.from('visits').select('*');
+      let recentVisitsQuery = supabase.from('visits').select('*').eq('is_deleted', false);
       if (!isUserAdmin) {
         recentVisitsQuery = recentVisitsQuery.eq('owner_id', user.id);
       }

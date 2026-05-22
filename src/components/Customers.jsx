@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Phone, MapPin, Sprout, ArrowLeft, Layers, Sliders, CheckSquare, Wrench } from 'lucide-react';
+import { Search, Plus, Phone, MapPin, Sprout, ArrowLeft, Layers, Sliders, CheckSquare, Wrench, Trash2 } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { formatDate, OPTIONS } from '../utils/helpers';
 import Modal from './UI/Modal';
@@ -61,7 +61,7 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
   const fetchCustomers = async () => {
     try {
       setLoading(true);
-      let query = supabase.from('customers').select('*');
+      let query = supabase.from('customers').select('*').eq('is_deleted', false);
       if (!isUserAdmin) {
         query = query.eq('owner_id', user.id);
       }
@@ -133,6 +133,29 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
       setSelectedCustomer(data); // Open details panel for newly created customer
     } catch (err) {
       alert('Erro: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteCustomer = async (customer) => {
+    const confirmDelete = window.confirm(`Tem certeza de que deseja excluir o cliente "${customer.name}"? Esta ação ocultará o cliente e todas as suas fazendas e máquinas associadas.`);
+    if (!confirmDelete) return;
+
+    try {
+      setLoading(true);
+      const { error } = await supabase
+        .from('customers')
+        .update({ is_deleted: true })
+        .eq('id', customer.id);
+
+      if (error) throw error;
+
+      alert(`Cliente "${customer.name}" excluído com sucesso.`);
+      setSelectedCustomer(null);
+      fetchCustomers();
+    } catch (err) {
+      alert('Erro ao excluir cliente: ' + err.message);
     } finally {
       setLoading(false);
     }
@@ -344,11 +367,22 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
           </button>
 
           {/* Customer Header card */}
-          <div className="detail-header">
-            <h2 style={{ fontSize: '22px' }}>{selectedCustomer.name}</h2>
-            <p style={{ color: 'var(--gray-500)', fontSize: '14px', marginTop: '2px' }}>
-              📍 {selectedCustomer.city} - {selectedCustomer.state} {selectedCustomer.company_name ? `• ${selectedCustomer.company_name}` : ''}
-            </p>
+          <div className="detail-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <div>
+              <h2 style={{ fontSize: '22px' }}>{selectedCustomer.name}</h2>
+              <p style={{ color: 'var(--gray-500)', fontSize: '14px', marginTop: '2px' }}>
+                📍 {selectedCustomer.city} - {selectedCustomer.state} {selectedCustomer.company_name ? `• ${selectedCustomer.company_name}` : ''}
+              </p>
+            </div>
+            <button
+              onClick={() => handleDeleteCustomer(selectedCustomer)}
+              className="btn btn-secondary"
+              style={{ color: '#ef4444', borderColor: '#ef4444', padding: '6px 12px', fontSize: '13px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              title="Excluir Cliente"
+            >
+              <Trash2 size={14} />
+              <span>Excluir</span>
+            </button>
           </div>
 
           {/* Swipeable Tabs Bar */}

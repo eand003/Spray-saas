@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Target, Search, Filter, Phone, Calendar, Plus, Edit2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Target, Search, Filter, Phone, Calendar, Plus, Edit2, CheckCircle2, AlertCircle, Trash2 } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { getLeadStatusLabel, formatDate, OPTIONS } from '../utils/helpers';
 import Modal from './UI/Modal';
@@ -71,7 +71,7 @@ const Leads = ({ user, activeQuickAction, onClearQuickAction, setCurrentTab, set
   const fetchLeads = async () => {
     try {
       setLoading(true);
-      let query = supabase.from('leads').select('*');
+      let query = supabase.from('leads').select('*').eq('is_deleted', false);
       if (!isUserAdmin) {
         query = query.eq('owner_id', user.id);
       }
@@ -228,6 +228,28 @@ const Leads = ({ user, activeQuickAction, onClearQuickAction, setCurrentTab, set
 
     } catch (err) {
       alert('Falha na conversão do lead: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteLead = async (lead) => {
+    const confirmDelete = window.confirm(`Tem certeza de que deseja excluir o lead "${lead.name}"?`);
+    if (!confirmDelete) return;
+
+    try {
+      setLoading(true);
+      const { error } = await supabase
+        .from('leads')
+        .update({ is_deleted: true })
+        .eq('id', lead.id);
+
+      if (error) throw error;
+
+      alert(`Lead "${lead.name}" excluído com sucesso.`);
+      fetchLeads();
+    } catch (err) {
+      alert('Erro ao excluir lead: ' + err.message);
     } finally {
       setLoading(false);
     }
@@ -401,6 +423,15 @@ const Leads = ({ user, activeQuickAction, onClearQuickAction, setCurrentTab, set
                   style={{ flex: '0 0 auto', width: '40px' }}
                 >
                   <Edit2 size={14} />
+                </button>
+                
+                <button 
+                  onClick={() => handleDeleteLead(ld)} 
+                  className="action-btn" 
+                  style={{ flex: '0 0 auto', width: '40px', color: '#ef4444', borderColor: '#ef4444' }}
+                  title="Excluir Lead"
+                >
+                  <Trash2 size={14} />
                 </button>
               </div>
             </div>
