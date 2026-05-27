@@ -325,7 +325,10 @@ const Visits = ({ user, preselectedLeadForVisit, onClearPreselectedLead }) => {
         }
       } else {
         payload.customer_id = activeTargetId;
-        payload.farm_id = visitForm.farm_id || null;
+        // Only send farm_id if it's a valid UUID from the loaded farms list
+        // An empty string or invalid value would violate the FK constraint
+        const validFarmId = farms.find(f => f.id === visitForm.farm_id);
+        payload.farm_id = validFarmId ? visitForm.farm_id : null;
 
         // Also update customer table notes
         if (visitForm.next_visit_date) {
