@@ -585,9 +585,10 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
             {/* SUB-TAB 2: FARMS */}
             {activeTab === 'farms' && (
               <div className="flex flex-col gap-3">
-                <div className="flex justify-between align-center">
-                  <h3 style={{ fontSize: '16px' }}>Fazendas & Unidades</h3>
-                  <button onClick={handleOpenAddFarm} className="btn btn-secondary" style={{ padding: '8px 12px', fontSize: '13px' }}>
+                {/* Mobile-optimized header: stacks title and action button vertically to avoid horizontal overflow */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '12px', borderBottom: '1px solid var(--gray-100)', paddingBottom: '12px' }}>
+                  <h3 style={{ fontSize: '15.5px', color: 'var(--gray-900)', fontWeight: '700' }}>Fazendas & Unidades</h3>
+                  <button onClick={handleOpenAddFarm} className="btn btn-secondary" style={{ width: '100%', justifyContent: 'center', padding: '10px', fontSize: '13px' }}>
                     <Plus size={14} /> Adicionar Fazenda
                   </button>
                 </div>
@@ -621,9 +622,10 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
             {/* SUB-TAB 3: SPRAYERS MACHINERY */}
             {activeTab === 'sprayers' && (
               <div className="flex flex-col gap-3">
-                <div className="flex justify-between align-center">
-                  <h3 style={{ fontSize: '16px' }}>Máquinas & Pulverizadores</h3>
-                  <button onClick={handleOpenAddSprayer} className="btn btn-secondary" style={{ padding: '8px 12px', fontSize: '13px' }} disabled={farms.length === 0}>
+                {/* Mobile-optimized header: stacks title and action button vertically to avoid horizontal overflow */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '12px', borderBottom: '1px solid var(--gray-100)', paddingBottom: '12px' }}>
+                  <h3 style={{ fontSize: '15.5px', color: 'var(--gray-900)', fontWeight: '700' }}>Máquinas & Pulverizadores</h3>
+                  <button onClick={handleOpenAddSprayer} className="btn btn-secondary" style={{ width: '100%', justifyContent: 'center', padding: '10px', fontSize: '13px' }} disabled={farms.length === 0}>
                     <Plus size={14} /> Adicionar Máquina
                   </button>
                 </div>
@@ -683,9 +685,10 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
             {/* SUB-TAB 4: INSTALLED SPRAY KITS */}
             {activeTab === 'kits' && (
               <div className="flex flex-col gap-3">
-                <div className="flex justify-between align-center">
-                  <h3 style={{ fontSize: '16px' }}>Tecnologia Spray Precision Instalada</h3>
-                  <button onClick={handleOpenAddKit} className="btn btn-secondary" style={{ padding: '8px 12px', fontSize: '13px' }} disabled={sprayers.length === 0}>
+                {/* Mobile-optimized header: stacks title and action button vertically to avoid horizontal overflow */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '12px', borderBottom: '1px solid var(--gray-100)', paddingBottom: '12px' }}>
+                  <h3 style={{ fontSize: '15.5px', color: 'var(--gray-900)', fontWeight: '700' }}>Tecnologia Spray Precision Instalada</h3>
+                  <button onClick={handleOpenAddKit} className="btn btn-secondary" style={{ width: '100%', justifyContent: 'center', padding: '10px', fontSize: '13px' }} disabled={sprayers.length === 0}>
                     <Plus size={14} /> Registrar Instalação
                   </button>
                 </div>
@@ -740,9 +743,10 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
             {/* SUB-TAB 5: VISITS TIMELINE */}
             {activeTab === 'visits' && (
               <div className="flex flex-col gap-3">
-                <div className="flex justify-between align-center">
-                  <h3 style={{ fontSize: '16px' }}>Histórico de Visitas de Campo</h3>
-                  <button onClick={handleCreateVisitForCustomer} className="btn btn-secondary" style={{ padding: '8px 12px', fontSize: '13px' }}>
+                {/* Mobile-optimized header: stacks title and action button vertically to avoid horizontal overflow */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '12px', borderBottom: '1px solid var(--gray-100)', paddingBottom: '12px' }}>
+                  <h3 style={{ fontSize: '15.5px', color: 'var(--gray-900)', fontWeight: '700' }}>Histórico de Visitas de Campo</h3>
+                  <button onClick={handleCreateVisitForCustomer} className="btn btn-secondary" style={{ width: '100%', justifyContent: 'center', padding: '10px', fontSize: '13px' }}>
                     <Plus size={14} /> Registrar Nova Visita
                   </button>
                 </div>
