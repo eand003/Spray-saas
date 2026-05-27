@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Search, Calendar, Plus, Navigation, Image as ImageIcon, Camera, Check } from 'lucide-react';
+import { MapPin, Search, Calendar, Plus, Navigation, Image as ImageIcon, Camera, Check, Trash2, Edit2 } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { formatDate, OPTIONS } from '../utils/helpers';
 import Modal from './UI/Modal';
@@ -7,6 +7,7 @@ import Modal from './UI/Modal';
 const Visits = ({ user, preselectedLeadForVisit, onClearPreselectedLead }) => {
   const [visits, setVisits] = useState([]);
   const [filteredVisits, setFilteredVisits] = useState([]);
+  const [editingVisit, setEditingVisit] = useState(null);
   const [leads, setLeads] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [farms, setFarms] = useState([]);
@@ -95,7 +96,7 @@ const Visits = ({ user, preselectedLeadForVisit, onClearPreselectedLead }) => {
   const fetchVisits = async () => {
     try {
       setLoading(true);
-      let query = supabase.from('visits').select('*');
+      let query = supabase.from('visits').select('*').eq('is_deleted', false);
       if (!isUserAdmin) {
         query = query.eq('owner_id', user.id);
       }
@@ -106,6 +107,9 @@ const Visits = ({ user, preselectedLeadForVisit, onClearPreselectedLead }) => {
       const leadsRes = await supabase.from('leads').select('id, name');
       const custsRes = await supabase.from('customers').select('id, name');
 
+      // Fetch visit attachments
+      const { data: attachments } = await supabase.from('visit_attachments').select('visit_id, file_url');
+
       const resolved = (data || []).map(visit => {
         let name = 'Desconhecido';
         if (visit.customer_id) {
@@ -115,7 +119,12 @@ const Visits = ({ user, preselectedLeadForVisit, onClearPreselectedLead }) => {
           const l = (leadsRes.data || []).find(ld => ld.id === visit.lead_id);
           name = l ? l.name : 'Lead';
         }
-        return { ...visit, entityName: name };
+        const att = (attachments || []).find(a => a.visit_id === visit.id);
+        return { 
+          ...visit, 
+          entityName: name,
+          photoUrl: att ? att.file_url : null
+        };
       });
 
       setVisits(resolved);
@@ -159,6 +168,7 @@ const Visits = ({ user, preselectedLeadForVisit, onClearPreselectedLead }) => {
   };
 
   const handleOpenAddModal = () => {
+    setEditingVisit(null);
     setVisitForm({
       lead_id: leads[0]?.id || '',
       customer_id: customers[0]?.id || '',
@@ -178,6 +188,31 @@ const Visits = ({ user, preselectedLeadForVisit, onClearPreselectedLead }) => {
       notes: ''
     });
     setAttachedPhoto(null);
+    setIsAddVisitOpen(true);
+  };
+
+  const handleOpenEditModal = (visit) => {
+    setEditingVisit(visit);
+    setFormType(visit.customer_id ? 'customer' : 'lead');
+    setVisitForm({
+      lead_id: visit.lead_id || '',
+      customer_id: visit.customer_id || '',
+      farm_id: visit.farm_id || '',
+      visit_type: visit.visit_type || 'Prospecção',
+      visit_datetime: visit.visit_datetime ? new Date(visit.visit_datetime).toISOString().substring(0, 16) : new Date().toISOString().substring(0, 16),
+      latitude: visit.latitude || '',
+      longitude: visit.longitude || '',
+      people_present: visit.people_present || '',
+      topics_discussed: visit.topics_discussed || '',
+      pains_identified: visit.pains_identified || '',
+      machines_evaluated: visit.machines_evaluated || '',
+      commercial_potential: visit.commercial_potential || 'Médio',
+      result: visit.result || 'Interesse Inicial / Agendamento',
+      next_step: visit.next_step || '',
+      next_visit_date: visit.next_visit_date || '',
+      notes: visit.notes || ''
+    });
+    setAttachedPhoto(visit.photoUrl || null);
     setIsAddVisitOpen(true);
   };
 
@@ -298,11 +333,31 @@ const Visits = ({ user, preselectedLeadForVisit, onClearPreselectedLead }) => {
         }
       }
 
-      const { data: visitData, error: visitErr } = await supabase.from('visits').insert(payload).select().single();
-      if (visitErr) throw visitErr;
+      let visitData;
+      if (editingVisit) {
+        const { data, error } = await supabase
+          .from('visits')
+          .update(payload)
+          .eq('id', editingVisit.id)
+          .select()
+          .single();
+        if (error) throw error;
+        visitData = data;
+      } else {
+        const { data, error } = await supabase
+          .from('visits')
+          .insert(payload)
+          .select()
+          .single();
+        if (error) throw error;
+        visitData = data;
+      }
 
-      // If photo was uploaded, insert attachment
-      if (attachedPhoto) {
+      // If photo was uploaded or changed, update attachment
+      if (attachedPhoto && (!editingVisit || attachedPhoto !== editingVisit.photoUrl)) {
+        if (editingVisit) {
+          await supabase.from('visit_attachments').delete().eq('visit_id', editingVisit.id);
+        }
         await supabase.from('visit_attachments').insert({
           organization_id: payload.organization_id,
           visit_id: visitData.id,
@@ -311,12 +366,36 @@ const Visits = ({ user, preselectedLeadForVisit, onClearPreselectedLead }) => {
           description: 'Foto registrada durante a visita comercial.',
           created_by: user.id
         });
+      } else if (!attachedPhoto && editingVisit && editingVisit.photoUrl) {
+        await supabase.from('visit_attachments').delete().eq('visit_id', editingVisit.id);
       }
 
       setIsAddVisitOpen(false);
       fetchVisits();
     } catch (err) {
       alert('Erro ao registrar visita: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteVisit = async (visit) => {
+    const confirmDelete = window.confirm(`Tem certeza de que deseja excluir esta visita de "${visit.entityName}"?`);
+    if (!confirmDelete) return;
+
+    try {
+      setLoading(true);
+      const { error } = await supabase
+        .from('visits')
+        .update({ is_deleted: true })
+        .eq('id', visit.id);
+
+      if (error) throw error;
+
+      alert(`Visita excluída com sucesso.`);
+      fetchVisits();
+    } catch (err) {
+      alert('Erro ao excluir visita: ' + err.message);
     } finally {
       setLoading(false);
     }
@@ -408,13 +487,44 @@ const Visits = ({ user, preselectedLeadForVisit, onClearPreselectedLead }) => {
                   📆 Retorno Agendado: {formatDate(v.next_visit_date)} {v.next_step ? `(${v.next_step})` : ''}
                 </div>
               )}
+
+              {v.photoUrl && (
+                <div style={{ marginTop: '12px' }}>
+                  <img 
+                    src={v.photoUrl} 
+                    alt="Foto da Visita" 
+                    style={{ width: '100%', maxHeight: '180px', objectFit: 'cover', borderRadius: 'var(--radius-sm)' }} 
+                  />
+                </div>
+              )}
+
+              {/* ACTION SHORTCUT BUTTONS */}
+              <div className="mobile-card-actions">
+                <button 
+                  onClick={() => handleOpenEditModal(v)} 
+                  className="action-btn action-btn-primary"
+                  style={{ justifyContent: 'center' }}
+                >
+                  <Edit2 size={14} />
+                  <span>Editar</span>
+                </button>
+                <button 
+                  onClick={() => handleDeleteVisit(v)} 
+                  className="action-btn" 
+                  style={{ color: '#ef4444', borderColor: '#ef4444', justifyContent: 'center' }}
+                  title="Excluir Visita"
+                >
+                  <Trash2 size={14} />
+                  <span>Excluir</span>
+                </button>
+              </div>
             </div>
           ))}
         </div>
       )}
 
       {/* ======================= REGISTRATION MODAL ======================= */}
-      <Modal isOpen={isAddVisitOpen} onClose={() => setIsAddVisitOpen(false)} title="Registrar Nova Visita">
+      <Modal isOpen={isAddVisitOpen} onClose={() => setIsAddVisitOpen(false)} title={editingVisit ? "Editar Visita" : "Registrar Nova Visita"}>
         <form onSubmit={handleSubmit}>
           {/* Target choice */}
           <div className="form-group">
@@ -635,7 +745,7 @@ const Visits = ({ user, preselectedLeadForVisit, onClearPreselectedLead }) => {
           </div>
 
           <button type="submit" className="btn btn-primary btn-large" disabled={loading}>
-            {loading ? 'Salvando...' : 'Registrar Visita em Campo'}
+            {loading ? 'Salvando...' : editingVisit ? 'Salvar Alterações' : 'Registrar Visita em Campo'}
           </button>
         </form>
       </Modal>
