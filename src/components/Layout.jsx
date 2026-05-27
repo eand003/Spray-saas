@@ -2,6 +2,16 @@ import React from 'react';
 import { LayoutDashboard, Target, Users, MapPin, LogOut, Sprout, DollarSign } from 'lucide-react';
 import { supabase } from '../config/supabase';
 
+const getInitials = (name) => {
+  if (!name) return 'U';
+  const cleanName = name.includes('@') ? name.split('@')[0] : name;
+  const parts = cleanName.trim().split(/\s+/);
+  if (parts.length >= 2) {
+    return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+  }
+  return cleanName.substring(0, 2).toUpperCase();
+};
+
 const Layout = ({ children, currentTab, setCurrentTab, user, onLogout }) => {
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -40,8 +50,14 @@ const Layout = ({ children, currentTab, setCurrentTab, user, onLogout }) => {
           </div>
           
           {user && (
-            <div className="flex align-center gap-3">
-              <div className="user-badge">
+            <div className="flex align-center gap-2">
+              {/* Initials Avatar */}
+              <div className="user-avatar" title={user.user_metadata?.full_name || user.email}>
+                {getInitials(user.user_metadata?.full_name || user.email)}
+              </div>
+
+              {/* Desktop User Badge */}
+              <div className="user-badge desktop-only-badge">
                 <span>{user.user_metadata?.full_name || user.email}</span>
                 <span style={{ opacity: 0.6 }}>|</span>
                 <span style={{ fontSize: '11px', textTransform: 'uppercase' }}>
@@ -49,13 +65,12 @@ const Layout = ({ children, currentTab, setCurrentTab, user, onLogout }) => {
                 </span>
               </div>
               
-              {/* Desktop Logout Button */}
+              {/* Universal Header Logout Button */}
               <button 
                 onClick={handleLogout} 
                 className="btn-icon" 
                 title="Sair"
-                style={{ display: 'none', display: 'flex' }}
-                className="btn-icon desktop-logout-btn"
+                style={{ width: '36px', height: '36px' }}
               >
                 <LogOut size={16} />
               </button>
@@ -82,16 +97,6 @@ const Layout = ({ children, currentTab, setCurrentTab, user, onLogout }) => {
               </button>
             );
           })}
-          
-          {/* Mobile Logout Button in nav */}
-          <button
-            onClick={handleLogout}
-            className="nav-item mobile-logout-btn"
-            style={{ color: '#ef4444' }}
-          >
-            <LogOut size={22} />
-            <span>Sair</span>
-          </button>
         </nav>
 
         {/* Dynamic page container */}
@@ -101,20 +106,6 @@ const Layout = ({ children, currentTab, setCurrentTab, user, onLogout }) => {
           </div>
         </main>
       </div>
-      
-      {/* Simple style additions to hide/show buttons based on screen width */}
-      <style>{`
-        @media (min-width: 769px) {
-          .mobile-logout-btn {
-            display: none !important;
-          }
-        }
-        @media (max-width: 768px) {
-          .desktop-logout-btn {
-            display: none !important;
-          }
-        }
-      `}</style>
     </div>
   );
 };

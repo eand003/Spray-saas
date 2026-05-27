@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
 import { formatDate } from '../utils/helpers';
+import Modal from './UI/Modal';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -865,7 +866,7 @@ const Finance = ({ user }) => {
               )}
 
               {/* General cash movements */}
-              <div className="grid gap-4" style={{ gridTemplateColumns: '1fr 1fr' }}>
+              <div className="responsive-grid-2 gap-4">
                 {/* Recent Receivables Installments */}
                 <div className="card">
                   <div className="flex justify-between align-center" style={{ marginBottom: '16px' }}>
@@ -1366,7 +1367,7 @@ const Finance = ({ user }) => {
                 </p>
               </div>
 
-              <div className="grid gap-4" style={{ gridTemplateColumns: '1.2fr 1fr' }}>
+              <div className="responsive-grid-1-2 gap-4">
                 {/* Form Parameters */}
                 <div className="card" style={{ padding: '24px' }}>
                   <h3 style={{ fontSize: '16px', marginBottom: '20px', borderBottom: '1px solid var(--gray-100)', paddingBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -1921,24 +1922,20 @@ const Finance = ({ user }) => {
       )}
 
       {/* ==================== FORM MODAL: REGISTER/EDIT SALE ==================== */}
-      {showSaleModal && (
-        <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <div className="modal-content card" style={{ width: '90%', maxWidth: '600px', padding: '24px', backgroundColor: '#fff', maxHeight: '95vh', overflowY: 'auto' }}>
-            <div className="flex justify-between align-center" style={{ marginBottom: '20px', borderBottom: '1px solid var(--gray-100)', paddingBottom: '12px' }}>
-              <h2 style={{ fontSize: '18px', margin: 0, color: editingSaleId ? '#1d4ed8' : 'var(--primary)', fontWeight: 700 }}>
-                {editingSaleId ? <><Edit2 size={18} style={{ display: 'inline', marginRight: '6px' }} />Editar Venda Comercial</> : 'Lançar Venda Técnica Comercial'}
-              </h2>
-              <button className="tab-btn" onClick={() => { setShowSaleModal(false); setEditingSaleId(null); }} style={{ fontSize: '20px', padding: 0 }}>&times;</button>
-            </div>
+      <Modal 
+        isOpen={showSaleModal} 
+        onClose={() => { setShowSaleModal(false); setEditingSaleId(null); }}
+        title={editingSaleId ? 'Editar Venda Comercial' : 'Lançar Venda Técnica Comercial'}
+        className="modal-content-wide"
+      >
+        {editingSaleId && (
+          <div style={{ backgroundColor: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 'var(--radius)', padding: '10px 14px', marginBottom: '16px', fontSize: '13px', color: '#1d4ed8', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Edit2 size={14} />
+            <span>Modo de Edição: As parcelas e comissões anteriores serão substituídas ao salvar.</span>
+          </div>
+        )}
 
-            {editingSaleId && (
-              <div style={{ backgroundColor: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 'var(--radius)', padding: '10px 14px', marginBottom: '16px', fontSize: '13px', color: '#1d4ed8', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Edit2 size={14} />
-                <span>Modo de Edição: As parcelas e comissões anteriores serão substituídas ao salvar.</span>
-              </div>
-            )}
-
-            <form onSubmit={handleSaveSale}>
+        <form onSubmit={handleSaveSale}>
               {/* Cliente */}
               <div className="form-group" style={{ marginBottom: '14px' }}>
                 <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px' }}>Cliente Comprador *</label>
@@ -2233,20 +2230,15 @@ const Finance = ({ user }) => {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
+      </Modal>
 
       {/* ==================== FORM MODAL: REGISTER EXPENSE (ADMIN ONLY) ==================== */}
-      {showExpenseModal && (
-        <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <div className="modal-content card" style={{ width: '90%', maxWidth: '450px', padding: '24px', backgroundColor: '#fff' }}>
-            <div className="flex justify-between align-center" style={{ marginBottom: '20px', borderBottom: '1px solid var(--gray-100)', paddingBottom: '12px' }}>
-              <h2 style={{ fontSize: '18px', margin: 0 }}>Registrar Nova Despesa Operacional</h2>
-              <button className="tab-btn" onClick={() => setShowExpenseModal(false)} style={{ fontSize: '20px', padding: 0 }}>&times;</button>
-            </div>
-
-            <form onSubmit={handleSaveExpense}>
+      <Modal 
+        isOpen={showExpenseModal} 
+        onClose={() => setShowExpenseModal(false)}
+        title="Registrar Nova Despesa Operacional"
+      >
+        <form onSubmit={handleSaveExpense}>
               <div className="form-group" style={{ marginBottom: '14px' }}>
                 <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px' }}>Fornecedor / Favorecido *</label>
                 <input 
@@ -2324,9 +2316,7 @@ const Finance = ({ user }) => {
                 <button type="submit" className="btn btn-primary" style={{ backgroundColor: '#ef4444' }}>Registrar Saída</button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
+      </Modal>
     </div>
   );
 };
