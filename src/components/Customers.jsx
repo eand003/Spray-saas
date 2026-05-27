@@ -431,37 +431,72 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
       ) : (
         /* 2. DYNAMIC COMPREHENSIVE DETAIL TABS PANEL */
         <div>
-          {/* Back to list */}
-          <button 
-            onClick={() => setSelectedCustomer(null)} 
-            className="btn btn-secondary" 
-            style={{ marginBottom: '16px', display: 'inline-flex', padding: '8px 16px' }}
-          >
-            <ArrowLeft size={16} />
-            <span>Voltar para Lista</span>
-          </button>
+          {/* NATIVE APP-LIKE COMPACT STICKY HEADER */}
+          <div className="detail-header" style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '12px', 
+            marginBottom: '16px',
+            backgroundColor: 'var(--white)',
+            padding: '16px',
+            borderBottom: '1px solid var(--gray-200)',
+            margin: '-24px -20px 16px -20px',
+            position: 'sticky',
+            top: 'var(--nav-height)',
+            zIndex: 10
+          }}>
+            {/* Back button arrow icon */}
+            <button 
+              onClick={() => setSelectedCustomer(null)} 
+              style={{ 
+                width: '36px', 
+                height: '36px', 
+                borderRadius: '50%', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                backgroundColor: 'var(--gray-100)',
+                color: 'var(--gray-700)',
+                flexShrink: 0
+              }}
+              title="Voltar"
+            >
+              <ArrowLeft size={18} />
+            </button>
 
-          {/* Customer Header card */}
-          <div className="detail-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <div>
-              <h2 style={{ fontSize: '22px' }}>{selectedCustomer.name}</h2>
-              <p style={{ color: 'var(--gray-500)', fontSize: '14px', marginTop: '2px' }}>
+            {/* Title & Subtitle */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h2 style={{ fontSize: '17px', fontWeight: 800, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', color: 'var(--gray-900)' }}>
+                {selectedCustomer.name}
+              </h2>
+              <p style={{ color: 'var(--gray-500)', fontSize: '12px', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', marginTop: '1px' }}>
                 📍 {selectedCustomer.city} - {selectedCustomer.state} {selectedCustomer.company_name ? `• ${selectedCustomer.company_name}` : ''}
               </p>
             </div>
+
+            {/* Trash button icon */}
             <button
               onClick={() => handleDeleteCustomer(selectedCustomer)}
-              className="btn btn-secondary"
-              style={{ color: '#ef4444', borderColor: '#ef4444', padding: '6px 12px', fontSize: '13px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              style={{ 
+                width: '36px', 
+                height: '36px', 
+                borderRadius: '50%', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                backgroundColor: '#fef2f2',
+                color: '#ef4444',
+                border: '1px solid rgba(239, 68, 68, 0.1)',
+                flexShrink: 0
+              }}
               title="Excluir Cliente"
             >
-              <Trash2 size={14} />
-              <span>Excluir</span>
+              <Trash2 size={16} />
             </button>
           </div>
 
           {/* Swipeable Tabs Bar */}
-          <div className="tabs-container">
+          <div className="tabs-container" style={{ marginBottom: '16px' }}>
             <button className={`tab-btn ${activeTab === 'summary' ? 'active' : ''}`} onClick={() => setActiveTab('summary')}>
               Resumo
             </button>
@@ -469,10 +504,10 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
               Fazendas ({farms.length})
             </button>
             <button className={`tab-btn ${activeTab === 'sprayers' ? 'active' : ''}`} onClick={() => setActiveTab('sprayers')}>
-              Pulverizadores ({sprayers.length})
+              Máquinas ({sprayers.length})
             </button>
             <button className={`tab-btn ${activeTab === 'kits' ? 'active' : ''}`} onClick={() => setActiveTab('kits')}>
-              Kits Spray ({kits.length})
+              Kits ({kits.length})
             </button>
             <button className={`tab-btn ${activeTab === 'visits' ? 'active' : ''}`} onClick={() => setActiveTab('visits')}>
               Visitas ({visits.length})
@@ -486,11 +521,11 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
             {activeTab === 'summary' && (
               <div className="flex flex-col gap-4">
                 <div className="card">
-                  <h3 style={{ fontSize: '16px', marginBottom: '12px', borderBottom: '1px solid var(--gray-100)', paddingBottom: '8px' }}>
+                  <h3 style={{ fontSize: '15px', marginBottom: '12px', borderBottom: '1px solid var(--gray-100)', paddingBottom: '8px', color: 'var(--gray-900)' }}>
                     Dados de Contato
                   </h3>
-                  <div className="flex flex-col gap-2" style={{ fontSize: '14px' }}>
-                    <div><strong>Contato WhatsApp:</strong> {selectedCustomer.phone}</div>
+                  <div className="flex flex-col gap-2" style={{ fontSize: '13.5px' }}>
+                    <div><strong>WhatsApp:</strong> {selectedCustomer.phone}</div>
                     {selectedCustomer.email && <div><strong>E-mail:</strong> {selectedCustomer.email}</div>}
                     {selectedCustomer.document && <div><strong>Documento (CPF/CNPJ):</strong> {selectedCustomer.document}</div>}
                     {selectedCustomer.notes && (
@@ -501,14 +536,26 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
                     )}
                   </div>
                   
-                  {/* Shortcuts */}
-                  <div className="flex gap-2" style={{ marginTop: '20px' }}>
+                  {/* Shortcuts - stacked vertically on mobile for native app touch targets */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '20px' }}>
                     <a 
                       href={`https://wa.me/55${selectedCustomer.phone}`} 
                       target="_blank" 
                       rel="noopener noreferrer" 
-                      className="btn btn-primary"
-                      style={{ flex: 1, backgroundColor: '#25d366' }}
+                      className="btn"
+                      style={{ 
+                        backgroundColor: '#25d366', 
+                        color: 'var(--white)',
+                        fontWeight: '700',
+                        fontSize: '14px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        padding: '12px',
+                        borderRadius: 'var(--radius-md)',
+                        boxShadow: '0 4px 10px rgba(37, 211, 102, 0.15)'
+                      }}
                     >
                       <Phone size={16} />
                       Chamar no WhatsApp
@@ -516,10 +563,19 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
                     <button 
                       onClick={handleCreateVisitForCustomer} 
                       className="btn btn-primary"
-                      style={{ flex: 1 }}
+                      style={{ 
+                        fontWeight: '700',
+                        fontSize: '14px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        padding: '12px',
+                        borderRadius: 'var(--radius-md)'
+                      }}
                     >
                       <MapPin size={16} />
-                      Registrar Visita
+                      Registrar Nova Visita
                     </button>
                   </div>
                 </div>
@@ -594,15 +650,23 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
                         <p style={{ fontSize: '13px', color: 'var(--gray-500)', marginTop: '2px' }}>
                           🚜 Fazenda: {farm ? farm.name : 'Sede'} {s.year ? `• Ano: ${s.year}` : ''}
                         </p>
-                        <div className="grid grid-cols-2 gap-2" style={{ marginTop: '10px', fontSize: '13px' }}>
-                          <div><strong>Barra:</strong> {s.boom_width_m || '--'} m</div>
-                          <div><strong>Bicos Reais:</strong> {s.nozzle_count || '--'} bicos</div>
-                          <div><strong>Espaçamento:</strong> {s.nozzle_spacing_cm || '--'} cm</div>
-                          <div><strong>Bico Atual:</strong> {s.current_nozzle_model || '--'}</div>
-                          <div><strong>Vazão Calda:</strong> {s.flow_rate_l_ha || '--'} L/ha</div>
-                          <div><strong>Velocidade:</strong> {s.working_speed_km_h || '--'} km/h</div>
-                          <div><strong>Série:</strong> {s.serial_number || '--'}</div>
-                          <div><strong>Monitor:</strong> {s.controller_monitor || '--'}</div>
+                        <div style={{ 
+                          display: 'grid', 
+                          gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', 
+                          gap: '8px 16px', 
+                          marginTop: '12px', 
+                          fontSize: '13px',
+                          borderTop: '1px solid var(--gray-100)',
+                          paddingTop: '12px'
+                        }}>
+                          <div><span style={{ color: 'var(--gray-500)' }}>Barra:</span> <strong>{s.boom_width_m || '--'} m</strong></div>
+                          <div><span style={{ color: 'var(--gray-500)' }}>Bicos:</span> <strong>{s.nozzle_count || '--'} bicos</strong></div>
+                          <div><span style={{ color: 'var(--gray-500)' }}>Espaço:</span> <strong>{s.nozzle_spacing_cm || '--'} cm</strong></div>
+                          <div><span style={{ color: 'var(--gray-500)' }}>Modelo Bico:</span> <strong>{s.current_nozzle_model || '--'}</strong></div>
+                          <div><span style={{ color: 'var(--gray-500)' }}>Vazão Calda:</span> <strong>{s.flow_rate_l_ha || '--'} L/ha</strong></div>
+                          <div><span style={{ color: 'var(--gray-500)' }}>Velocidade:</span> <strong>{s.working_speed_km_h || '--'} km/h</strong></div>
+                          <div><span style={{ color: 'var(--gray-500)' }}>Nº Série:</span> <strong>{s.serial_number || '--'}</strong></div>
+                          <div><span style={{ color: 'var(--gray-500)' }}>Monitor:</span> <strong>{s.controller_monitor || '--'}</strong></div>
                         </div>
                         {s.notes && (
                           <p style={{ fontSize: '12px', color: 'var(--gray-500)', marginTop: '6px', fontStyle: 'italic' }}>
@@ -646,11 +710,20 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
                         <p style={{ fontSize: '13px', color: 'var(--gray-700)', marginTop: '2px' }}>
                           🔧 Máquina: {sprayer ? `${sprayer.brand} ${sprayer.model}` : 'Pulverizador'}
                         </p>
-                        <div className="grid grid-cols-2 gap-2" style={{ marginTop: '10px', fontSize: '13px', color: 'var(--gray-800)' }}>
-                          <div><strong>Pontos Indução:</strong> {k.installed_points_count || '--'} bicos</div>
-                          <div><strong>Versão:</strong> {k.version}</div>
-                          <div><strong>Painel Série:</strong> {k.panel_serial_number || '--'}</div>
-                          <div><strong>Garantia:</strong> {k.warranty_until ? formatDate(k.warranty_until) : '--'}</div>
+                        <div style={{ 
+                          display: 'grid', 
+                          gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', 
+                          gap: '8px 16px', 
+                          marginTop: '12px', 
+                          fontSize: '13px',
+                          borderTop: '1px solid rgba(16, 185, 129, 0.15)',
+                          paddingTop: '12px',
+                          color: 'var(--gray-800)'
+                        }}>
+                          <div><span style={{ color: 'var(--gray-500)' }}>Bicos Indução:</span> <strong>{k.installed_points_count || '--'}</strong></div>
+                          <div><span style={{ color: 'var(--gray-500)' }}>Versão Kit:</span> <strong>{k.version}</strong></div>
+                          <div><span style={{ color: 'var(--gray-500)' }}>Série Painel:</span> <strong>{k.panel_serial_number || '--'}</strong></div>
+                          <div><span style={{ color: 'var(--gray-500)' }}>Garantia:</span> <strong style={{ color: '#d97706' }}>{k.warranty_until ? formatDate(k.warranty_until) : '--'}</strong></div>
                         </div>
                         {k.technical_notes && (
                           <div style={{ fontSize: '12px', color: 'var(--primary-dark)', marginTop: '8px', backgroundColor: 'rgba(255,255,255,0.7)', padding: '6px', borderRadius: '4px' }}>
