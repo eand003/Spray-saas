@@ -326,52 +326,35 @@ const Leads = ({ user, activeQuickAction, onClearQuickAction, setCurrentTab, set
           />
         </div>
         
-        <div className="flex align-center gap-2 scroll-hide" style={{ overflowX: 'auto', paddingBottom: '6px' }}>
-          <span style={{ fontSize: '13px', color: 'var(--gray-500)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }}>
-            <Filter size={14} /> Filtrar Status:
+        <div className="flex align-center gap-2" style={{ width: '100%' }}>
+          <span style={{ fontSize: '13px', color: 'var(--gray-600)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
+            <Filter size={15} style={{ color: 'var(--primary)' }} /> Filtrar Status:
           </span>
-          <button 
-            className={`badge ${statusFilter === '' ? 'badge-new' : 'badge-no_fit'}`}
-            onClick={() => setStatusFilter('')}
-            style={{ border: 'none', cursor: 'pointer' }}
+          <select 
+            value={statusFilter} 
+            onChange={(e) => setStatusFilter(e.target.value)}
+            style={{ 
+              height: '42px',
+              padding: '8px 12px',
+              fontSize: '14px',
+              borderRadius: 'var(--radius-md)',
+              backgroundColor: 'var(--white)',
+              color: 'var(--gray-800)',
+              border: '1px solid var(--gray-300)',
+              fontWeight: 500,
+              flex: 1
+            }}
           >
-            Todos
-          </button>
-          <button 
-            className={`badge ${statusFilter === 'new' ? 'badge-new' : 'badge-no_fit'}`}
-            onClick={() => setStatusFilter('new')}
-            style={{ border: 'none', cursor: 'pointer' }}
-          >
-            Novo
-          </button>
-          <button 
-            className={`badge ${statusFilter === 'contact_made' ? 'badge-contact_made' : 'badge-no_fit'}`}
-            onClick={() => setStatusFilter('contact_made')}
-            style={{ border: 'none', cursor: 'pointer' }}
-          >
-            Contato
-          </button>
-          <button 
-            className={`badge ${statusFilter === 'visit_scheduled' ? 'badge-scheduled' : 'badge-no_fit'}`}
-            onClick={() => setStatusFilter('visit_scheduled')}
-            style={{ border: 'none', cursor: 'pointer' }}
-          >
-            Visita
-          </button>
-          <button 
-            className={`badge ${statusFilter === 'negotiating' ? 'badge-negotiating' : 'badge-no_fit'}`}
-            onClick={() => setStatusFilter('negotiating')}
-            style={{ border: 'none', cursor: 'pointer' }}
-          >
-            Negociação
-          </button>
-          <button 
-            className={`badge ${statusFilter === 'won' ? 'badge-won' : 'badge-no_fit'}`}
-            onClick={() => setStatusFilter('won')}
-            style={{ border: 'none', cursor: 'pointer' }}
-          >
-            Won (Fechado)
-          </button>
+            <option value="">Todos os Status</option>
+            <option value="new">Novo</option>
+            <option value="contact_made">Contato Feito</option>
+            <option value="visit_scheduled">Visita Agendada</option>
+            <option value="visited">Visitado</option>
+            <option value="negotiating">Em Negociação</option>
+            <option value="won">Won (Fechado)</option>
+            <option value="lost">Lost (Perdido)</option>
+            <option value="no_fit">Sem Fit</option>
+          </select>
         </div>
       </div>
 
