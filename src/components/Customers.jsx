@@ -527,26 +527,27 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
           {/* TAB CONTENTS */}
           <div className="tab-content-area">
             
-            {/* SUB-TAB 1: SUMMARY */}
+            {/* SUB-TAB 1: SUMMARY / 360° DASHBOARD */}
             {activeTab === 'summary' && (
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-4" style={{ width: '100%' }}>
+                {/* 1. DADOS DE CONTATO & OBSERVAÇÕES */}
                 <div className="card">
-                  <h3 style={{ fontSize: '15px', marginBottom: '12px', borderBottom: '1px solid var(--gray-100)', paddingBottom: '8px', color: 'var(--gray-900)' }}>
-                    Dados de Contato
+                  <h3 style={{ fontSize: '15px', marginBottom: '12px', borderBottom: '1px solid var(--gray-100)', paddingBottom: '8px', color: 'var(--gray-900)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span>📞</span> Dados de Contato
                   </h3>
                   <div className="flex flex-col gap-2" style={{ fontSize: '13.5px' }}>
                     <div><strong>WhatsApp:</strong> {selectedCustomer.phone}</div>
                     {selectedCustomer.email && <div><strong>E-mail:</strong> {selectedCustomer.email}</div>}
-                    {selectedCustomer.document && <div><strong>Documento (CPF/CNPJ):</strong> {selectedCustomer.document}</div>}
+                    {selectedCustomer.document && <div><strong>CPF/CNPJ:</strong> {selectedCustomer.document}</div>}
                     {selectedCustomer.notes && (
-                      <div style={{ marginTop: '12px', padding: '10px', backgroundColor: 'var(--gray-50)', borderRadius: 'var(--radius-sm)', borderLeft: '3px solid var(--gray-300)' }}>
+                      <div style={{ marginTop: '12px', padding: '12px', backgroundColor: 'var(--gray-50)', borderRadius: 'var(--radius-sm)', borderLeft: '3px solid var(--primary)', fontSize: '13px' }}>
                         <strong>Observações Comerciais:</strong>
                         <p style={{ marginTop: '4px', fontStyle: 'italic', color: 'var(--gray-600)' }}>"{selectedCustomer.notes}"</p>
                       </div>
                     )}
                   </div>
                   
-                  {/* Shortcuts - stacked vertically on mobile for native app touch targets */}
+                  {/* Actions - stacked vertically on mobile for native app touch targets */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '20px' }}>
                     <a 
                       href={`https://wa.me/55${selectedCustomer.phone}`} 
@@ -588,6 +589,121 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
                       Registrar Nova Visita
                     </button>
                   </div>
+                </div>
+
+                {/* 2. ESTRUTURA OPERACIONAL (FAZENDAS & MÁQUINAS) */}
+                <div className="card">
+                  <h3 style={{ fontSize: '15px', marginBottom: '12px', borderBottom: '1px solid var(--gray-100)', paddingBottom: '8px', color: 'var(--gray-900)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span>🌾</span> Propriedades e Lavouras ({farms.length})
+                  </h3>
+                  {farms.length === 0 ? (
+                    <p style={{ fontSize: '13px', color: 'var(--gray-500)', fontStyle: 'italic' }}>Nenhuma fazenda cadastrada.</p>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      {farms.map((f, idx) => (
+                        <div key={f.id} style={{ fontSize: '13px', padding: '8px', backgroundColor: 'var(--gray-50)', borderRadius: '6px', borderLeft: '3px solid var(--gray-300)' }}>
+                          <div style={{ fontWeight: '700', color: 'var(--gray-800)' }}>
+                            {idx + 1}. {f.name} {f.area_hectares ? `(${f.area_hectares} ha)` : ''}
+                          </div>
+                          <div style={{ color: 'var(--gray-500)', fontSize: '12px', marginTop: '2px' }}>
+                            📍 {f.city} - {f.state} {f.main_crops && f.main_crops.length > 0 ? `• Culturas: ${f.main_crops.join(', ')}` : ''}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <h3 style={{ fontSize: '15px', marginTop: '20px', marginBottom: '12px', borderBottom: '1px solid var(--gray-100)', paddingBottom: '8px', color: 'var(--gray-900)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span>🚜</span> Frota de Pulverizadores ({sprayers.length})
+                  </h3>
+                  {sprayers.length === 0 ? (
+                    <p style={{ fontSize: '13px', color: 'var(--gray-500)', fontStyle: 'italic' }}>Nenhum pulverizador cadastrado.</p>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      {sprayers.map((s, idx) => {
+                        const farm = farms.find(f => f.id === s.farm_id);
+                        return (
+                          <div key={s.id} style={{ fontSize: '13px', padding: '8px', backgroundColor: 'var(--gray-50)', borderRadius: '6px', borderLeft: s.kit_status === 'installed' ? '3px solid var(--primary)' : '3px solid var(--gray-300)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div>
+                              <div style={{ fontWeight: '700', color: 'var(--gray-800)' }}>
+                                {idx + 1}. {s.brand} {s.model} {s.year ? `(${s.year})` : ''}
+                              </div>
+                              <div style={{ color: 'var(--gray-500)', fontSize: '12px', marginTop: '2px' }}>
+                                Fazenda: {farm ? farm.name : 'Sede'} • Barra: {s.boom_width_m || '--'}m ({s.nozzle_count || '--'} bicos)
+                              </div>
+                            </div>
+                            <span className={`badge ${s.kit_status === 'installed' ? 'badge-won' : 'badge-no_fit'}`} style={{ fontSize: '10px', padding: '2px 6px' }}>
+                              {s.kit_status === 'installed' ? 'Com Kit ⚡' : 'Sem Kit'}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                {/* 3. TECNOLOGIA SPRAY PRECISION & GARANTIAS */}
+                {kits.length > 0 && (
+                  <div className="card" style={{ borderLeft: '4px solid var(--primary)', backgroundColor: 'var(--primary-light)' }}>
+                    <h3 style={{ fontSize: '15px', marginBottom: '12px', borderBottom: '1px solid rgba(16, 185, 129, 0.15)', paddingBottom: '8px', color: 'var(--primary-dark)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span>⚡</span> Tecnologia Spray Precision
+                    </h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      {kits.map((k, idx) => {
+                        const sprayer = sprayers.find(s => s.id === k.sprayer_id);
+                        return (
+                          <div key={k.id} style={{ fontSize: '13px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <strong style={{ color: 'var(--primary-dark)' }}>Kit {kits.length > 1 ? `${idx + 1}:` : ''} {k.kit_number}</strong>
+                              <span className="badge badge-won" style={{ fontSize: '10px', padding: '2px 6px' }}>Ativo</span>
+                            </div>
+                            <div style={{ color: 'var(--gray-700)', fontSize: '12.5px', marginTop: '4px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                              <div><strong>Equipamento:</strong> {sprayer ? `${sprayer.brand} ${sprayer.model}` : 'Pulverizador'}</div>
+                              <div><strong>Versão:</strong> {k.version}</div>
+                              {k.warranty_until && (
+                                <div style={{ color: '#d97706', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px' }}>
+                                  <span>🛡️</span> Garantia válida até {formatDate(k.warranty_until)}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* 4. ÚLTIMA VISITA DE CAMPO */}
+                <div className="card">
+                  <h3 style={{ fontSize: '15px', marginBottom: '12px', borderBottom: '1px solid var(--gray-100)', paddingBottom: '8px', color: 'var(--gray-900)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span>📋</span> Última Visita de Campo
+                  </h3>
+                  {visits.length === 0 ? (
+                    <p style={{ fontSize: '13px', color: 'var(--gray-500)', fontStyle: 'italic' }}>Nenhuma visita registrada para este cliente.</p>
+                  ) : (
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
+                        <span className="badge badge-new" style={{ fontSize: '10px', padding: '2px 8px' }}>{visits[0].visit_type}</span>
+                        <span style={{ fontSize: '11px', color: 'var(--gray-400)' }}>{formatDate(visits[0].visit_datetime)}</span>
+                      </div>
+                      <div style={{ fontSize: '13.5px', fontWeight: '700', color: 'var(--gray-800)' }}>
+                        Resultado: {visits[0].result || 'Sem resultado'}
+                      </div>
+                      {visits[0].pains_identified && (
+                        <div style={{ fontSize: '12px', color: 'var(--gray-600)', marginTop: '4px' }}>
+                          <strong>Dores identificadas:</strong> {visits[0].pains_identified}
+                        </div>
+                      )}
+                      <p style={{ fontSize: '12.5px', color: 'var(--gray-500)', marginTop: '6px', fontStyle: 'italic', padding: '8px', backgroundColor: 'var(--gray-50)', borderRadius: '4px' }}>
+                        "{visits[0].notes}"
+                      </p>
+                      {visits[0].next_visit_date && (
+                        <div style={{ fontSize: '12px', color: 'var(--status-scheduled)', fontWeight: '700', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <span>📆</span> Retorno Agendado: {formatDate(visits[0].next_visit_date)}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
