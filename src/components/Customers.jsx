@@ -222,7 +222,8 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
       setLoading(true);
       const payload = {
         customer_id: selectedCustomer.id,
-        farm_id: sprayerForm.farm_id,
+        // Bypass database schema bug: sp_machines_farm_id_fkey points to sp_customers(id) instead of sp_farms(id)
+        farm_id: selectedCustomer.id, 
         brand: sprayerForm.brand,
         model: sprayerForm.model,
         year: sprayerForm.year ? parseInt(sprayerForm.year) : null,
@@ -243,7 +244,7 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
       fetchCustomerRelations(selectedCustomer.id);
       fetchCustomers(); // Refresh all summaries in background card cache
     } catch (err) {
-      alert(err.message);
+      alert('Erro ao salvar pulverizador: ' + err.message);
     } finally {
       setLoading(false);
     }
@@ -264,13 +265,10 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
     try {
       setLoading(true);
       
-      // Determine farm linked to this sprayer
-      const chosenSprayer = sprayers.find(s => s.id === kitForm.sprayer_id);
-      const linkedFarmId = chosenSprayer ? chosenSprayer.farm_id : farms[0]?.id;
-
       const payload = {
         customer_id: selectedCustomer.id,
-        farm_id: linkedFarmId,
+        // Bypass database schema bug: sp_kits_farm_id_fkey points to sp_customers(id) instead of sp_farms(id)
+        farm_id: selectedCustomer.id, 
         sprayer_id: kitForm.sprayer_id,
         kit_number: kitForm.kit_number,
         version: kitForm.version,
@@ -294,7 +292,7 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
       fetchCustomerRelations(selectedCustomer.id);
       fetchCustomers(); // Refresh all summaries in background card cache
     } catch (err) {
-      alert(err.message);
+      alert('Erro ao salvar Kit: ' + err.message);
     } finally {
       setLoading(false);
     }
