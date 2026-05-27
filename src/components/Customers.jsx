@@ -368,7 +368,7 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
                     )}
 
                     {/* Rich visual relationships summaries exactly like the pitch demo card */}
-                    {customerSprayers.length > 0 && (
+                    {(customerSprayers.length > 0 || customerFarms.length > 0 || hasKit) && (
                       <div style={{ 
                         fontSize: '13px', 
                         color: 'var(--gray-700)', 
@@ -379,32 +379,42 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
                         flexDirection: 'column',
                         gap: '4px'
                       }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ fontSize: '14px' }}>🚜</span> 
-                          <span><strong>Máquina:</strong> {customerSprayers[0].brand} {customerSprayers[0].model}</span>
-                        </div>
-                        
-                        {customerFarms.length > 0 && (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span style={{ fontSize: '14px' }}>🌾</span> 
-                            <span><strong>Propriedade:</strong> {customerFarms[0].name} {customerFarms[0].area_hectares ? `(${customerFarms[0].area_hectares} ha)` : ''}</span>
+                        {/* Sprayers Map */}
+                        {customerSprayers.map((s, idx) => (
+                          <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{ fontSize: '14px' }}>🚜</span> 
+                            <span>
+                              <strong>Máquina {customerSprayers.length > 1 ? `${idx + 1}` : ''}:</strong> {s.brand} {s.model}
+                              {s.kit_status === 'installed' ? ' (Com Kit Eletrostático ⚡)' : ' (Sem Kit)'}
+                            </span>
                           </div>
-                        )}
+                        ))}
+                        
+                        {/* Farms Map */}
+                        {customerFarms.map((f, idx) => (
+                          <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{ fontSize: '14px' }}>🌾</span> 
+                            <span>
+                              <strong>Propriedade {customerFarms.length > 1 ? `${idx + 1}` : ''}:</strong> {f.name} {f.area_hectares ? `(${f.area_hectares} ha)` : ''}
+                            </span>
+                          </div>
+                        ))}
 
-                        {hasKit && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '2px' }}>
+                        {/* Kits Map */}
+                        {customerKits.map((k, idx) => (
+                          <div key={k.id} style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '2px' }}>
                             <div style={{ color: 'var(--primary-dark)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
                               <span style={{ fontSize: '14px' }}>⚡</span>
-                              <span><strong>Kit Eletrostático:</strong> {customerKits[0].kit_number}</span>
+                              <span><strong>Kit {customerKits.length > 1 ? `${idx + 1}` : ''}:</strong> {k.kit_number}</span>
                             </div>
-                            {customerKits[0].warranty_until && (
+                            {k.warranty_until && (
                               <div style={{ color: '#d97706', fontSize: '11.5px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px', marginLeft: '2px' }}>
                                 <span style={{ fontSize: '12px' }}>🛡️</span>
-                                <span>Garantia ativa até {formatDate(customerKits[0].warranty_until)}</span>
+                                <span>Garantia ativa até {formatDate(k.warranty_until)}</span>
                               </div>
                             )}
                           </div>
-                        )}
+                        ))}
                       </div>
                     )}
 
