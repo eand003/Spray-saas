@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guia do Vendedor — Manual de Campo Spray Precision</title>
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --primary-light: #d1fae5;
+      --secondary: #0f172a;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #334155;
+      --text-dark: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Beautiful Top Navbar with Emerald gradient */
+    header {
+      background: linear-gradient(135deg, var(--secondary) 0%, #1e293b 100%);
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+      border-bottom: 5px solid var(--primary);
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -20%;
+      width: 60%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(16,185,129,0.15) 0%, rgba(0,0,0,0) 70%);
+      pointer-events: none;
+    }
+
+    .logo-container {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .logo-icon {
+      background-color: var(--primary);
+      color: var(--secondary);
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: bold;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+    }
+
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    h1 span {
+      color: var(--primary);
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-top: 4px;
+      color: #94a3b8;
+    }
+
+    /* Responsive Layout Grid */
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 40px;
+    }
+
+    /* Fixed/Sticky Sidebar Navigation */
+    .sidebar {
+      position: sticky;
+      top: 40px;
+      height: fit-content;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .sidebar h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      color: var(--text-dark);
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+    }
+
+    .sidebar li {
+      margin-bottom: 12px;
+    }
+
+    .sidebar a {
+      color: var(--text-main);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s ease;
+    }
+
+    .sidebar a:hover {
+      background-color: var(--primary-light);
+      color: var(--primary-dark);
+    }
+
+    /* Main Content Styling */
+    main {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    section {
+      margin-bottom: 40px;
+      scroll-margin-top: 40px;
+    }
+
+    section:not(:last-child) {
+      padding-bottom: 40px;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px;
+      color: var(--text-dark);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    h2::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 24px;
+      background-color: var(--primary);
+      border-radius: var(--radius-sm);
+    }
+
+    h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      color: var(--text-dark);
+      margin: 20px 0 10px 0;
+    }
+
+    p {
+      margin-bottom: 16px;
+      font-size: 15px;
+      color: var(--text-main);
+    }
+
+    /* WhatsApp button callout */
+    .whatsapp-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background-color: #dcfce7;
+      color: #15803d;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 13px;
+      text-decoration: none;
+    }
+
+    /* Alert / Callout Box */
+    .callout {
+      background-color: #f0fdf4;
+      border-left: 4px solid var(--primary);
+      padding: 20px;
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin: 24px 0;
+      display: flex;
+      gap: 16px;
+    }
+
+    .callout-icon {
+      font-size: 24px;
+      color: var(--primary-dark);
+      line-height: 1;
+    }
+
+    .callout-content p {
+      margin: 0;
+      font-size: 14px;
+      color: #065f46;
+      font-weight: 500;
+    }
+
+    /* Lists */
+    ul, ol {
+      margin-left: 20px;
+      margin-bottom: 20px;
+    }
+
+    li {
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    /* Code blocks */
+    code {
+      font-family: 'Courier New', Courier, monospace;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* Table styling */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 12px 16px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f1f5f9;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    tr:nth-child(even) {
+      background-color: #f8fafc;
+    }
+
+    /* Footer styling */
+    footer {
+      background-color: var(--secondary);
+      color: var(--text-muted);
+      text-align: center;
+      padding: 40px 20px;
+      margin-top: 60px;
+      border-top: 1px solid #1e293b;
+    }
+
+    /* Mobile Responsive design */
+    @media (max-width: 900px) {
+      .container {
+        grid-template-columns: 1fr;
+        margin: 20px auto;
+        gap: 20px;
+      }
+      .sidebar {
+        position: static;
+        width: 100%;
+      }
+      main {
+        padding: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sleek Modern Header -->
+  <header>
+    <div class="logo-container">
+      <div class="logo-icon">🌾</div>
+      <h1>Spray<span>Precision</span></h1>
+    </div>
+    <div class="subtitle">Manual Comercial de Campo do Vendedor & Simulador Agrícola</div>
+  </header>
+
+  <div class="container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <h3>Tópicos</h3>
+      <ul>
+        <li><a href="#crm">🎯 1. Funil de CRM e Leads</a></li>
+        <li><a href="#customers">🚜 2. Cadastro de Clientes</a></li>
+        <li><a href="#visits">📍 3. Visitas & Geolocalização</a></li>
+        <li><a href="#simulator">🧮 4. Simulador de Vendas</a></li>
+        <li><a href="#earnings">📈 5. Extrato de Comissões</a></li>
+      </ul>
+    </aside>
+
+    <!-- Main Explanatory Content -->
+    <main>
+      
+      <!-- Section 1 -->
+      <section id="crm">
+        <h2>1. Funil de Vendas (CRM) e Leads</h2>
+        <p>O funil comercial é o coração do seu trabalho em campo. Nele você acompanha todas as etapas de negociação com novos agricultores, garantindo prospecção ativa e acompanhamento em dia.</p>
+        
+        <h3>Como cadastrar um Lead:</h3>
+        <ol>
+          <li>Acesse a aba <strong>Leads</strong> e clique no botão verde <strong>"Novo Lead"</strong>.</li>
+          <li>Insira os dados obrigatórios cruciais para a logística de campo:</li>
+          <ul>
+            <li><strong>Nome do Lead/Fazenda:</strong> Para identificação no sistema.</li>
+            <li><strong>WhatsApp/Telefone:</strong> Preencha o número de celular completo.</li>
+            <li><strong>Cidade e Estado:</strong> Essencial para cálculo de visitas geográficas.</li>
+          </ul>
+          <li>Use o campo <strong>Notas</strong> para salvar particularidades: cultura principal, área total e maquinários usados.</li>
+        </ol>
+
+        <div class="callout">
+          <div class="callout-icon">💬</div>
+          <div class="callout-content">
+            <p><strong>Fale no WhatsApp Direto sem Salvar o Número:</strong> Ao lado de cada lead no Dashboard e no CRM, você tem um botão de atalho rápido. Ao clicar nele, o sistema cria o link universal da API do WhatsApp e abre a janela de conversa no celular ou WhatsApp Web imediatamente, economizando tempo no trator ou no carro.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2 -->
+      <section id="customers">
+        <h2>2. Convertendo Leads em Clientes e Cadastrando Máquinas</h2>
+        <p>Assim que o agricultor decide fechar negócio ou aprova a instalação de teste, você converte o lead para que ele passe a ter uma ficha técnica avançada e histórica no sistema.</p>
+        
+        <h3>Fluxo de Conversão Comercial:</h3>
+        <ol>
+          <li>Dentro da visualização do Lead, clique no botão <strong>"Converter para Cliente"</strong>.</li>
+          <li>O lead será arquivado como vencido/ganho e uma nova ficha de cliente será gerada em <strong>Clientes (Customers)</strong>.</li>
+          <li>Acesse o perfil do Cliente e gerencie as abas técnicas:</li>
+          <ul>
+            <li><strong>Fazendas:</strong> Cadastre as áreas em hectares e culturas principais (Soja, Milho, Algodão).</li>
+            <li><strong>Pulverizadores:</strong> Clique em "Adicionar Pulverizador" para mapear os dados da máquina: Marca, Modelo, Largura de barra, velocidade média de pulverização, vazão operacional comum (L/ha) e espaçamento de bicos.</li>
+          </ul>
+        </ol>
+
+        <div class="callout">
+          <div class="callout-icon">💡</div>
+          <div class="callout-content">
+            <p><strong>Regra Inteligente do Espaçamento de 35cm:</strong> Caso você insira uma máquina com espaçamento entre bicos de 35cm, a engenharia da Spray Precision recomenda o uso de módulos isoladores de bico duplo (onde 1 módulo atende 2 bicos de pulverização). O sistema calcula essa redução de módulos sugeridos na hora de simular os kits, evitando erros de cotação!</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3 -->
+      <section id="visits">
+        <h2>3. Registro de Visitas de Campo com GPS & Navegação</h2>
+        <p>Toda visita comercial, técnica ou pós-venda que você faz ao cliente deve ser documentada para acompanhamento corporativo e segurança técnica.</p>
+        
+        <h3>Como usar a Geolocalização do GPS do celular:</h3>
+        <ol>
+          <li>Quando estiver na fazenda do produtor, acesse <strong>Nova Visita</strong>.</li>
+          <li>Clique no botão de <strong>Capturar Localização</strong>.</li>
+          <li>O aplicativo consome a API de GPS nativa do seu smartphone e registra as coordenadas exatas (Latitude/Longitude) do local da visita técnica de forma precisa.</li>
+          <li>Insira os tópicos discutidos, dores identificadas, potencial de fechamento (Alto/Médio/Baixo) e tire fotos anexas do pulverizador ou do kit instalado direto da câmera do seu telefone.</li>
+        </ol>
+
+        <div class="callout" style="background-color: #eff6ff; border-left-color: #3b82f6;">
+          <div class="callout-icon" style="color: #1d4ed8;">📍</div>
+          <div class="callout-content" style="color: #1e3a8a;">
+            <p><strong>Navegue direto pelo Google Maps ou Waze:</strong> Na visualização do histórico de visitas daquele cliente, você verá um atalho azul com a localização dele. Clicar nele abrirá automaticamente o Waze ou Google Maps com a rota perfeita traçada até os limites da fazenda baseada na coordenada de GPS que você gravou!</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 4 -->
+      <section id="simulator">
+        <h2>4. Simulador de Vendas e Prazos Agrícolas</h2>
+        <p>A Spray Precision possui um **Simulador de Vendas** financeiro de alta precisão na aba **Financeiro** desenhado especialmente para o fechamento em campo.</p>
+        
+        <h3>O que você consegue calcular e configurar:</h3>
+        <ul>
+          <li><strong>Preço Eletrostático por Módulo:</strong> O valor padrão sugerido é de <strong>R$ 1.500,00 por módulo</strong>.</li>
+          <li>⚠️ **Restrição de Preço de Engenharia**: Para evitar desvalorização da nossa tecnologia, existe um piso intransponível de <strong>R$ 1.100,00 por módulo</strong> para vendedores. Vendas com descontos que deixem o preço equivalente abaixo desse piso serão bloqueadas para salvamento no app, exigindo override do administrador.</li>
+          <li><strong>Simulação de Prazos Agrícolas (Colheita):</strong></li>
+        </ul>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Condição Comercial</th>
+              <th>Divisão e Vencimento das Parcelas</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>À Vista</strong></td>
+              <td>100% no ato do faturamento.</td>
+            </tr>
+            <tr>
+              <td><strong>30/60</strong> ou <strong>30/60/90</strong></td>
+              <td>Divisão em duas ou três parcelas fixas em 30, 60 e 90 dias.</td>
+            </tr>
+            <tr>
+              <td><strong>Entrada + Safra (Março ou Abril)</strong></td>
+              <td>50% de entrada na instalação do kit + 50% de pagamento programado direto na liquidação da safra do produtor (programado automaticamente para <strong>30/03</strong> ou <strong>30/04</strong>).</td>
+            </tr>
+            <tr>
+              <td><strong>Entrada + Safra + Safrinha</strong></td>
+              <td>Divisão tripla em: Entrada na instalação (33,3%), parcela da Safra (33,3% em março ou abril) e parcela da Safrinha (33,4% com vencimento programado para <strong>30/06</strong> ou <strong>30/07</strong>).</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Section 5 -->
+      <section id="earnings">
+        <h2>5. Acompanhamento de Ganhos e Comissões</h2>
+        <p>Transparência total em seus repasses de vendas. Na aba de <strong>Meus Ganhos</strong>, você vê a sua listagem de comissões líquidas (10% padrão calculados sobre o valor líquido faturado, deduzidos os impostos e custos da empresa de 10%).</p>
+        
+        <p>Toda comissão passa por três etapas claras:</p>
+        <ol>
+          <li>⏳ <strong>Prevista (Expected):</strong> A venda do kit foi registrada, mas o cliente ainda não pagou a respectiva parcela agrícola associada.</li>
+          <li>🔓 <strong>Liberada (Released):</strong> A parcela correspondente foi devidamente paga pelo produtor e baixada pelo financeiro. O valor está liberado para o seu saque!</li>
+          <li>💸 <strong>Paga (Paid):</strong> O valor foi transferido pela contabilidade corporativa para a sua conta bancária/Pix.</li>
+        </ol>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Styled Footer -->
+  <footer>
+    <p>© 2026 Spray Precision. Todos os direitos reservados. Manual do Vendedor de Campo.</p>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CRM Spray Precision - Apresentação Executiva</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* =========================================================================
+       THE EXACT DESIGN SYSTEM & STYLES OF THE SPRAY PRECISION APP (LIGHT THEME)
+       ========================================================================= */
+    :root {
+      --primary: #10b981;          /* Emerald Green */
+      --primary-hover: #059669;
+      --primary-light: #ecfdf5;
+      --primary-dark: #064e3b;     /* Forest Jungle Green */
+      
+      --secondary: #6366f1;        /* Indigo Tech Indigo */
+      --secondary-hover: #4f46e5;
+      --secondary-light: #f5f3ff;
+      
+      --dark: #1f2937;             /* Dark Gray charcoal */
+      --light: #f9fafb;            /* Soft off-white */
+      --white: #ffffff;
+      
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-400: #9ca3af;
+      --gray-500: #6b7280;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+
+      /* Status Badges */
+      --status-new: #3b82f6;       /* Blue */
+      --status-new-bg: #eff6ff;
+      --status-contact: #a855f7;   /* Purple */
+      --status-contact-bg: #faf5ff;
+      --status-scheduled: #eab308; /* Yellow */
+      --status-scheduled-bg: #fef9c3;
+      --status-visited: #06b6d4;   /* Cyan */
+      --status-visited-bg: #ecfeff;
+      --status-negotiating: #f97316;/* Orange */
+      --status-negotiating-bg: #fff7ed;
+      --status-won: #10b981;       /* Emerald */
+      --status-won-bg: #ecfdf5;
+      --status-lost: #ef4444;      /* Red */
+      --status-lost-bg: #fef2f2;
+      
+      /* Fonts */
+      --font-title: 'Outfit', 'Inter', sans-serif;
+      --font-body: 'Inter', sans-serif;
+
+      /* Shadows */
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 8px 16px -2px rgba(6, 78, 59, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+      --shadow-lg: 0 20px 25px -5px rgba(6, 78, 59, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+      
+      /* Radius */
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      
+      --nav-height: 64px;
+      --mobile-nav-height: 72px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--gray-100);
+      color: var(--gray-800);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      padding-bottom: 84px; /* Space for bottom nav */
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-title);
+      color: var(--gray-900);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    /* Top App Header Replica */
+    .app-header {
+      background-color: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      height: var(--nav-height);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+    }
+
+    .header-container {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-text {
+      font-family: var(--font-title);
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+    }
+
+    .logo-text span {
+      color: var(--primary);
+      font-weight: 500;
+      margin-left: 4px;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Main Container */
+    .main-content {
+      padding: 16px;
+      max-width: 500px;
+      margin: 0 auto;
+      min-height: calc(100vh - var(--nav-height) - var(--mobile-nav-height));
+    }
+
+    /* Common Card Layout */
+    .card {
+      background-color: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--gray-200);
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .align-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-1 { gap: 4px; }
+    .gap-2 { gap: 8px; }
+    .gap-3 { gap: 12px; }
+
+    /* Button and Badges */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 100%;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: var(--white);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.97);
+      background-color: var(--primary-hover);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 50px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      width: fit-content;
+    }
+
+    .badge-new { background-color: var(--status-new-bg); color: var(--status-new); }
+    .badge-contact_made { background-color: var(--status-contact-bg); color: var(--status-contact); }
+    .badge-negotiating { background-color: var(--status-negotiating-bg); color: var(--status-negotiating); }
+    .badge-won { background-color: var(--status-won-bg); color: var(--status-won); }
+
+    /* Search & Filter select styling matching the new dropdown filter */
+    .search-input-wrapper {
+      position: relative;
+      width: 100%;
+      margin-bottom: 12px;
+    }
+
+    .search-input-wrapper svg {
+      position: absolute;
+      left: 14px;
+      top: 13px;
+      color: var(--gray-400);
+    }
+
+    .search-input-wrapper input {
+      width: 100%;
+      padding: 11px 16px 11px 40px;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      outline: none;
+      background: var(--white);
+      color: var(--gray-800);
+    }
+
+    .filter-dropdown-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      margin-bottom: 16px;
+    }
+
+    .filter-dropdown-container select {
+      height: 40px;
+      padding: 8px 12px;
+      font-size: 13.5px;
+      border-radius: var(--radius-md);
+      background-color: var(--white);
+      color: var(--gray-800);
+      border: 1px solid var(--gray-200);
+      font-weight: 600;
+      flex: 1;
+      outline: none;
+    }
+
+    /* Leads Mobile Cards Styling */
+    .mobile-card {
+      background-color: var(--white);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      border: 1px solid var(--gray-200);
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .mobile-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      gap: 12px;
+    }
+
+    .mobile-card-header > div:first-child {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .mobile-card-title {
+      font-size: 15.5px;
+      font-weight: 700;
+      color: var(--gray-900);
+      white-space: normal;
+      word-break: break-word;
+    }
+
+    .mobile-card-subtitle {
+      font-size: 13px;
+      color: var(--gray-500);
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .gps-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      padding: 8px 12px;
+      background-color: var(--gray-50);
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      border: 1px solid var(--gray-200);
+      margin-bottom: 12px;
+    }
+
+    .mobile-card-actions-col {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+      border-top: 1px solid var(--gray-100);
+      padding-top: 12px;
+    }
+
+    .mobile-card-actions-row {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid var(--gray-200);
+      background-color: var(--gray-50);
+      color: var(--gray-700);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .action-btn-primary {
+      background-color: var(--primary-light);
+      color: var(--primary-dark);
+      border-color: rgba(16, 185, 129, 0.2);
+    }
+
+    .action-btn-whatsapp {
+      background-color: #25d366;
+      color: var(--white);
+      border-color: #25d366;
+    }
+
+    /* Bottom Menu Replica */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--mobile-nav-height);
+      background-color: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid var(--gray-200);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 100;
+      box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.04);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--gray-500);
+      font-size: 10.5px;
+      font-weight: 600;
+      height: 100%;
+      flex: 1;
+      gap: 4px;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
+
+    .nav-item.active {
+      color: var(--primary-dark);
+    }
+
+    .nav-item .icon-wrapper {
+      width: 44px;
+      height: 28px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .nav-item.active .icon-wrapper {
+      background-color: var(--primary-light);
+      color: var(--primary-dark);
+    }
+
+    .nav-item svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* View Panes */
+    .view-pane {
+      display: none;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .view-pane.active {
+      display: block;
+    }
+
+    /* Custom Presentation Elements */
+    .pitch-badge {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 50px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+      width: fit-content;
+    }
+
+    .value-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .value-box {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .value-icon {
+      color: var(--primary);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .value-text h4 {
+      font-size: 14.5px;
+      color: var(--gray-900);
+      margin-bottom: 2px;
+    }
+
+    .value-text p {
+      font-size: 12.5px;
+      color: var(--gray-500);
+      line-height: 1.4;
+    }
+
+    /* Financial ROI Charts */
+    .chart-bar-wrapper {
+      margin-bottom: 14px;
+    }
+    
+    .chart-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 4px;
+    }
+
+    .chart-bar-container {
+      background: var(--gray-100);
+      height: 8px;
+      border-radius: 50px;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .chart-bar {
+      height: 100%;
+      border-radius: 50px;
+      background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+    }
+
+    /* Confetti Particle Container */
+    #confetti-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+      overflow: hidden;
+    }
+
+    /* Interactive ROI calculator styles */
+    .calc-slider-group {
+      margin-top: 14px;
+      margin-bottom: 18px;
+    }
+
+    .calc-slider-group label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gray-700);
+      margin-bottom: 6px;
+    }
+
+    .calc-slider-group input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 5px;
+      background: var(--gray-200);
+      outline: none;
+    }
+
+    .calc-slider-group input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      border: 2px solid var(--white);
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CONFETTI DUST LAYER -->
+  <div id="confetti-container"></div>
+
+  <!-- TOP APP HEADER REPLICA -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="logo-area">
+        <!-- Sprout Icon -->
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        <h1 class="logo-text">
+          Spray<span>Precision</span>
+        </h1>
+      </div>
+      
+      <div class="flex align-center gap-2">
+        <!-- Initials Avatar -->
+        <div class="user-avatar" title="Diretoria Spray">
+          DR
+        </div>
+        <!-- Lock icon -->
+        <div style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: var(--primary-light); border-radius: 50%; color: var(--primary-dark);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN VIEW CONTENT -->
+  <main class="main-content">
+
+    <!-- ======================= TAB 1: DASHBOARD (PITCH INTRO) ======================= -->
+    <div id="pane-dashboard" class="view-pane active">
+      <div class="pitch-badge">
+        <span>📈 APRESENTAÇÃO EXECUTIVA</span>
+      </div>
+      
+      <h2 style="font-size: 20px; margin-bottom: 6px; color: var(--primary-dark);">CRM Spray Precision</h2>
+      <p style="font-size: 13.5px; color: var(--gray-500); margin-bottom: 20px;">Por que esta tecnologia traz previsibilidade de caixa, logística inteligente e economia comercial?</p>
+
+      <!-- Stat Cards -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+        <div class="card" style="margin-bottom: 0; padding: 14px; border-left: 4px solid var(--primary);">
+          <h4 style="font-size: 24px; font-weight: 800; color: var(--primary-dark);">+45%</h4>
+          <p style="font-size: 11px; font-weight: 700; color: var(--gray-500); text-transform: uppercase;">Logística de Campo</p>
+          <p style="font-size: 10px; color: var(--gray-400); margin-top: 2px;">Rotas inteligentes no Maps</p>
+        </div>
+
+        <div class="card" style="margin-bottom: 0; padding: 14px; border-left: 4px solid var(--secondary);">
+          <h4 style="font-size: 24px; font-weight: 800; color: var(--secondary);">-30%</h4>
+          <p style="font-size: 11px; font-weight: 700; color: var(--gray-500); text-transform: uppercase;">Garantias da Fábrica</p>
+          <p style="font-size: 10px; color: var(--gray-400); margin-top: 2px;">Número de série vinculado</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 15px; border-bottom: 1px solid var(--gray-200); padding-bottom: 8px; margin-bottom: 12px; color: var(--gray-900);">Fundamentos do Nosso Retorno</h3>
+        <div class="value-grid">
+          <div class="value-box">
+            <svg class="value-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3 6 9 3 15 6 21 3 21 18 15 15 9 18 3 15"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+            <div class="value-text">
+              <h4>Georreferenciamento de Fazendas</h4>
+              <p>O time comercial captura as coordenadas do produtor no pátio. O sistema gera links de rotas automáticos, economizando tempo e despesas de viagem.</p>
+            </div>
+          </div>
+          <div class="value-box">
+            <svg class="value-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <div class="value-text">
+              <h4>Auditorias de Calibração com Fotos</h4>
+              <p>As visitas técnicas registram marcas do pulverizador e anexam evidências fotográficas, prevenindo manutenções indevidas em bicos de terceiros.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <button class="btn btn-primary" onclick="goToTab('pane-leads', 1)">
+        Ver Demo: Gestão de Leads (CRM) →
+      </button>
+    </div>
+
+    <!-- ======================= TAB 2: CRM LEADS ======================= -->
+    <div id="pane-leads" class="view-pane">
+      <div class="flex justify-between align-center" style="margin-bottom: 14px;">
+        <h2 style="font-size: 18px; color: var(--primary-dark);">Gestão de Leads (CRM)</h2>
+        <span class="badge badge-negotiating">Demonstração</span>
+      </div>
+
+      <!-- Live replica of search and dropdown filter -->
+      <div class="search-input-wrapper">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Buscar por produtor, fazenda..." value="" disabled />
+      </div>
+
+      <div class="filter-dropdown-container">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        <span style="font-size: 13px; font-weight: 700; color: var(--gray-600); white-space: nowrap;">Filtro Status:</span>
+        <select disabled>
+          <option>Todos os Status (Demo)</option>
+        </select>
+      </div>
+
+      <!-- Leads Card List -->
+      <div class="mobile-card">
+        <div class="mobile-card-header">
+          <div>
+            <h3 class="mobile-card-title">demo-Marcos da Silva (Fazenda Ouro Verde)</h3>
+            <div class="mobile-card-subtitle">
+              <span>📍 Ribeirão Preto - SP</span>
+              <span>•</span>
+              <span>🌾 Soja</span>
+            </div>
+          </div>
+          <span class="badge badge-negotiating">Negociação</span>
+        </div>
+
+        <div style="font-size: 12.5px; color: var(--gray-600); margin-bottom: 8px;">
+          <strong>Grupo:</strong> Grupo Silva & Filhos
+        </div>
+
+        <div style="font-size: 12.5px; background-color: var(--gray-100); padding: 8px 12px; border-radius: var(--radius-sm); margin-bottom: 12px; border-left: 3px solid var(--status-scheduled);">
+          <div class="flex align-center gap-1" style="font-weight: 700; color: var(--gray-700); font-size: 11.5px;">
+            📆 Ação Comercial: 28/05/2026
+          </div>
+          <div style="color: var(--gray-600); font-size: 11.5px; margin-top: 2px;">Apresentar simulador de economia com o kit eletrostático localizado.</div>
+        </div>
+
+        <p style="font-size: 12px; color: var(--gray-500); margin-bottom: 12px; font-style: italic;">
+          "Produtor demonstrou forte interesse em bicos eletrostáticos devido à alta deriva de calda no vento."
+        </p>
+
+        <!-- Dynamic GPS routing box -->
+        <div class="gps-container">
+          <span style="color: var(--gray-600); font-family: monospace; font-weight: 600;">GPS: -21.1789, -47.8067</span>
+          <a href="https://www.google.com/maps/dir/?api=1&destination=-21.178904,-47.806782" target="_blank" class="flex align-center gap-1" style="font-weight: 700; color: var(--primary); text-decoration: none; font-size: 11.5px;">
+            📍 Abrir Rota
+          </a>
+        </div>
+
+        <div class="mobile-card-actions-col">
+          <div class="mobile-card-actions-row">
+            <a href="#" class="action-btn action-btn-whatsapp" onclick="alert('Demo: Disparo de mensagem no WhatsApp.'); return false;">WhatsApp</a>
+            <button class="action-btn action-btn-primary" onclick="alert('Demo: Cadastro de Visita.')">Nova Visita</button>
+          </div>
+          <div class="mobile-card-actions-row">
+            <button class="action-btn" style="color: var(--primary); border-color: var(--primary);" onclick="alert('Demo: Lead transferido de forma automática para a Carteira de Clientes Ativos!')">Converter</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mobile-card">
+        <div class="mobile-card-header">
+          <div>
+            <h3 class="mobile-card-title">demo-Agropecuária Rio Doce (Fazenda Santa Fé)</h3>
+            <div class="mobile-card-subtitle">
+              <span>📍 Sorriso - MT</span>
+              <span>•</span>
+              <span>🌾 Milho</span>
+            </div>
+          </div>
+          <span class="badge badge-contact_made">Contato</span>
+        </div>
+
+        <div style="font-size: 12.5px; color: var(--gray-600); margin-bottom: 8px;">
+          <strong>Grupo:</strong> Grupo Rio Doce S/A
+        </div>
+
+        <div class="gps-container">
+          <span style="color: var(--gray-600); font-family: monospace; font-weight: 600;">GPS: -12.5412, -55.7208</span>
+          <a href="https://www.google.com/maps/dir/?api=1&destination=-12.541298,-55.720894" target="_blank" class="flex align-center gap-1" style="font-weight: 700; color: var(--primary); text-decoration: none; font-size: 11.5px;">
+            📍 Abrir Rota
+          </a>
+        </div>
+
+        <div class="mobile-card-actions-col">
+          <div class="mobile-card-actions-row">
+            <a href="#" class="action-btn action-btn-whatsapp" onclick="alert('Demo: WhatsApp.'); return false;">WhatsApp</a>
+            <button class="action-btn action-btn-primary" onclick="alert('Demo: Nova Visita.')">Nova Visita</button>
+          </div>
+        </div>
+      </div>
+      
+      <button class="btn btn-primary" onclick="goToTab('pane-customers', 2)">
+        Avançar: Ver Clientes Carteira →
+      </button>
+    </div>
+
+    <!-- ======================= TAB 3: CLIENTES CARTEIRA ======================= -->
+    <div id="pane-customers" class="view-pane">
+      <div class="flex justify-between align-center" style="margin-bottom: 14px;">
+        <h2 style="font-size: 18px; color: var(--primary-dark);">Carteira de Clientes</h2>
+        <span class="badge badge-won">Ativos</span>
+      </div>
+
+      <div class="mobile-card" style="border-left: 4px solid var(--primary);">
+        <div class="mobile-card-header">
+          <div>
+            <h3 class="mobile-card-title">demo-Valdir Ferreira (Grupo Ferreira Agro)</h3>
+            <div class="mobile-card-subtitle">
+              <span>📍 Sorriso - MT</span>
+            </div>
+          </div>
+          <span class="badge badge-won">Instalado</span>
+        </div>
+
+        <div style="font-size: 12.5px; color: var(--gray-700); margin-top: 6px; border-top: 1px solid var(--gray-100); padding-top: 8px;">
+          <div style="margin-bottom: 4px;">🚜 <strong>Máquina:</strong> John Deere M4040</div>
+          <div style="margin-bottom: 4px;">🌾 <strong>Propriedade:</strong> demo-Fazenda Sede Sorriso (850 ha)</div>
+          <div style="color: var(--primary-dark); font-weight: 700; margin-top: 6px;">⚡ <strong>Kit Eletrostático:</strong> SP-KIT-DEMO-0051</div>
+          <div style="color: #d97706; font-size: 11.5px; font-weight: 600; margin-top: 2px;">🛡️ Garantia de fábrica ativa até 15/03/2028</div>
+        </div>
+      </div>
+
+      <div class="mobile-card" style="border-left: 4px solid var(--primary);">
+        <div class="mobile-card-header">
+          <div>
+            <h3 class="mobile-card-title">demo-Beatriz Mello (Fazenda Vista Alegre)</h3>
+            <div class="mobile-card-subtitle">
+              <span>📍 Barretos - SP</span>
+            </div>
+          </div>
+          <span class="badge badge-won">Instalado</span>
+        </div>
+
+        <div style="font-size: 12.5px; color: var(--gray-700); margin-top: 6px; border-top: 1px solid var(--gray-100); padding-top: 8px;">
+          <div style="margin-bottom: 4px;">🚜 <strong>Máquina:</strong> Jacto Uniport 3030</div>
+          <div style="margin-bottom: 4px;">🌾 <strong>Propriedade:</strong> demo-Fazenda Vista Alegre (320 ha)</div>
+          <div style="color: var(--primary-dark); font-weight: 700; margin-top: 6px;">⚡ <strong>Kit Eletrostático:</strong> SP-KIT-DEMO-0078</div>
+          <div style="color: #d97706; font-size: 11.5px; font-weight: 600; margin-top: 2px;">🛡️ Garantia de fábrica ativa até 10/04/2028</div>
+        </div>
+      </div>
+      
+      <button class="btn btn-primary" onclick="goToTab('pane-finance', 3)">
+        Avançar: Ver Rentabilidade & ROI →
+      </button>
+    </div>
+
+    <!-- ======================= TAB 4: RENTABILIDADE (ROI CALCULATOR) ======================= -->
+    <div id="pane-finance" class="view-pane">
+      <div class="pitch-badge">
+        <span>💰 RENTABILIDADE & EBITDA</span>
+      </div>
+      
+      <h2 style="font-size: 18px; color: var(--primary-dark); margin-bottom: 6px;">Simulador Financeiro Executivo</h2>
+      <p style="font-size: 13.5px; color: var(--gray-500); margin-bottom: 16px;">Simulação em tempo real do retorno econômico das vendas de kits.</p>
+
+      <!-- Interactive Calculator Slider -->
+      <div class="card" style="border-left: 4px solid var(--primary);">
+        <h3 style="font-size: 14.5px; margin-bottom: 12px; color: var(--primary-dark);">Calculadora de Lucro do Representante</h3>
+        
+        <div class="calc-slider-group">
+          <label>
+            <span>Qtd. Bicos Pulverizador:</span>
+            <span id="slider-bicos-val" style="color: var(--primary-dark);">72 Bicos (36 metros)</span>
+          </label>
+          <input type="range" id="slider-bicos" min="20" max="120" value="72" oninput="calculateROI()">
+        </div>
+
+        <div class="calc-slider-group">
+          <label>
+            <span>Preço do Bico (R$):</span>
+            <span id="slider-preco-val" style="color: var(--primary-dark);">R$ 1.500</span>
+          </label>
+          <input type="range" id="slider-preco" min="1000" max="2500" step="100" value="1500" oninput="calculateROI()">
+        </div>
+
+        <div style="border-top: 1px solid var(--gray-200); padding-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div>
+            <div style="font-size: 11px; color: var(--gray-400); font-weight: 700; text-transform: uppercase;">Faturamento Bruto:</div>
+            <div id="val-bruto" style="font-size: 16px; font-weight: 800; color: var(--gray-900);">R$ 108.000,00</div>
+          </div>
+          <div>
+            <div style="font-size: 11px; color: var(--gray-400); font-weight: 700; text-transform: uppercase;">Sua Comissão (10%):</div>
+            <div id="val-comissao" style="font-size: 16px; font-weight: 800; color: var(--primary-dark);">R$ 10.800,00</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 14px; margin-bottom: 12px;">Impacto Operacional Estimado</h3>
+        
+        <div class="chart-bar-wrapper">
+          <div class="chart-label">
+            <span>Redução em Gastos de Viagem (GPS)</span>
+            <strong>-45%</strong>
+          </div>
+          <div class="chart-bar-container">
+            <div class="chart-bar" style="width: 45%;"></div>
+          </div>
+        </div>
+
+        <div class="chart-bar-wrapper">
+          <div class="chart-label">
+            <span>Velocidade de Conversão de Clientes</span>
+            <strong>+40%</strong>
+          </div>
+          <div class="chart-bar-container">
+            <div class="chart-bar" style="width: 78%; background: linear-gradient(90deg, #10b981 0%, #10B9B9 100%);"></div>
+          </div>
+        </div>
+
+        <div class="chart-bar-wrapper" style="margin-bottom: 0;">
+          <div class="chart-label">
+            <span>Fidelização & Pós-Venda Preventivo</span>
+            <strong>+92%</strong>
+          </div>
+          <div class="chart-bar-container">
+            <div class="chart-bar" style="width: 92%; background: linear-gradient(90deg, #10b981 0%, #6366f1 100%);"></div>
+          </div>
+        </div>
+      </div>
+      
+      <button class="btn btn-primary" onclick="goToTab('pane-approval', 4)">
+        Avançar: Painel de Aprovação →
+      </button>
+    </div>
+
+    <!-- ======================= TAB 5: APROVAÇÃO (TAP CONFETTI ACTION) ======================= -->
+    <div id="pane-approval" class="view-pane">
+      <div class="pitch-badge">
+        <span>🛡️ HOMOLOGAÇÃO EXECUTIVA</span>
+      </div>
+      
+      <h2 style="font-size: 18px; color: var(--primary-dark); margin-bottom: 6px;">Conselho de Administração</h2>
+      <p style="font-size: 13.5px; color: var(--gray-500); margin-bottom: 20px;">Homologação comercial e implantação oficial do ecossistema de vendas no campo.</p>
+
+      <div class="card" style="text-align: center; padding: 30px 20px;">
+        <!-- Stamp SVG icon -->
+        <div style="width: 64px; height: 64px; display: inline-flex; align-items: center; justify-content: center; background-color: var(--primary-light); border-radius: 50%; color: var(--primary); margin-bottom: 16px;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        
+        <h3 style="font-size: 18px; color: var(--gray-900); margin-bottom: 8px;">Pronto para Ativação</h3>
+        <p style="font-size: 13px; color: var(--gray-500); margin-bottom: 24px; line-height: 1.5;">O CRM Spray Precision reduz a fricção entre a equipe comercial de rua e a administração do escritório. Trazendo roteirização, auditorias e garantias a um banco de dados unificado.</p>
+
+        <!-- Tap Confetti Button -->
+        <button class="btn btn-primary" id="btn-homologar" onclick="approveAndSpark(this)">
+          ✨ Homologar & Ativar CRM
+        </button>
+        
+        <div id="approval-success-message" style="display: none; margin-top: 16px; color: var(--primary-dark); font-weight: 700; font-size: 13.5px; animation: fadeIn 0.4s ease-out;">
+          🎉 SISTEMA HOMOLOGADO COM SUCESSO!
+        </div>
+      </div>
+
+      <div class="card" style="background-color: var(--primary-light); border-color: rgba(16, 185, 129, 0.25); margin-bottom: 0;">
+        <h4 style="font-size: 13.5px; color: var(--primary-dark); margin-bottom: 4px; font-weight: 700;">Spray Precision SaaS</h4>
+        <p style="font-size: 12px; color: var(--gray-600); line-height: 1.4;">Este aplicativo replica fielmente os cadastros e dados reais do banco de dados das fazendas e das chaves de segurança dos kits homologados da Spray Precision.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- BOTTOM NAVIGATION MENU REPLICA -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="switchPane('pane-dashboard', this)">
+      <div class="icon-wrapper">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+      </div>
+      <span>Apresentação</span>
+    </button>
+    
+    <button class="nav-item" onclick="switchPane('pane-leads', this)">
+      <div class="icon-wrapper">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+      </div>
+      <span>CRM Leads</span>
+    </button>
+    
+    <button class="nav-item" onclick="switchPane('pane-customers', this)">
+      <div class="icon-wrapper">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <span>Clientes</span>
+    </button>
+    
+    <button class="nav-item" onclick="switchPane('pane-finance', this)">
+      <div class="icon-wrapper">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      </div>
+      <span>ROI / Ganhos</span>
+    </button>
+
+    <button class="nav-item" onclick="switchPane('pane-approval', this)">
+      <div class="icon-wrapper">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </div>
+      <span>Aprovar</span>
+    </button>
+  </nav>
+
+  <script>
+    function switchPane(paneId, btnElement) {
+      // 1. Hide all view panes
+      const panes = document.querySelectorAll('.view-pane');
+      panes.forEach(pane => {
+        pane.classList.remove('active');
+      });
+
+      // 2. Show selected pane
+      const targetPane = document.getElementById(paneId);
+      if (targetPane) {
+        targetPane.classList.add('active');
+      }
+
+      // 3. Deactivate all menu items
+      const menuItems = document.querySelectorAll('.nav-item');
+      menuItems.forEach(item => {
+        item.classList.remove('active');
+      });
+
+      // 4. Activate current menu item
+      btnElement.classList.add('active');
+      
+      // Scroll to top
+      window.scrollTo(0, 0);
+    }
+
+    function goToTab(paneId, navIndex) {
+      const navItems = document.querySelectorAll('.bottom-nav .nav-item');
+      if (navItems[navIndex]) {
+        switchPane(paneId, navItems[navIndex]);
+      }
+    }
+
+    // Dynamic ROI calculations
+    function calculateROI() {
+      const bicos = parseInt(document.getElementById('slider-bicos').value);
+      const preco = parseInt(document.getElementById('slider-preco').value);
+      
+      document.getElementById('slider-bicos-val').innerText = `${bicos} Bicos (${Math.round(bicos * 0.5)} metros)`;
+      document.getElementById('slider-preco-val').innerText = `R$ ${preco.toLocaleString('pt-BR')}`;
+      
+      const bruto = bicos * preco;
+      const comissao = bruto * 0.10;
+      
+      document.getElementById('val-bruto').innerText = `R$ ${bruto.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      document.getElementById('val-comissao').innerText = `R$ ${comissao.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    }
+
+    // Physics confetti particles trigger
+    function approveAndSpark(button) {
+      button.innerText = 'Ativado! 🌿';
+      button.style.backgroundColor = 'var(--primary-dark)';
+      button.style.boxShadow = 'none';
+      button.disabled = true;
+      
+      document.getElementById('approval-success-message').style.display = 'block';
+      
+      launchConfetti();
+    }
+
+    function launchConfetti() {
+      const container = document.getElementById('confetti-container');
+      container.innerHTML = '';
+      const colors = ['#10b981', '#6366f1', '#3b82f6', '#eab308', '#ef4444'];
+      
+      // Create 80 particles
+      for (let i = 0; i < 80; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'absolute';
+        particle.style.width = Math.random() * 8 + 4 + 'px';
+        particle.style.height = Math.random() * 8 + 4 + 'px';
+        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        
+        // Initial position in the center
+        particle.style.left = '50%';
+        particle.style.top = '50%';
+        particle.style.transform = 'translate(-50%, -50%)';
+        particle.style.zIndex = '9999';
+        particle.style.pointerEvents = 'none';
+        
+        container.appendChild(particle);
+        
+        // Physics parameters
+        const angle = Math.random() * Math.PI * 2;
+        const velocity = Math.random() * 200 + 70;
+        const xVelocity = Math.cos(angle) * velocity;
+        const yVelocity = Math.sin(angle) * velocity - 120; // upward bias
+        
+        let gravity = 7;
+        const startTime = Date.now();
+        
+        const anim = () => {
+          const elapsed = (Date.now() - startTime) / 1000;
+          if (elapsed > 2.5) {
+            particle.remove();
+            return;
+          }
+          
+          const currentX = xVelocity * elapsed;
+          const currentY = yVelocity * elapsed + 0.5 * gravity * 150 * elapsed * elapsed;
+          const opacity = 1 - elapsed / 2.5;
+          
+          particle.style.transform = `translate(calc(-50% + ${currentX}px), calc(-50% + ${currentY}px)) rotate(${elapsed * 500}deg)`;
+          particle.style.opacity = opacity;
+          
+          requestAnimationFrame(anim);
+        };
+        requestAnimationFrame(anim);
+      }
+    }
+  </script>
+</body>
+</html>

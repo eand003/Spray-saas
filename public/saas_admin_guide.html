@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guia do Administrador — Spray Precision Manager</title>
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --primary-light: #d1fae5;
+      --secondary: #0f172a;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #334155;
+      --text-dark: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Beautiful Top Navbar with Emerald gradient */
+    header {
+      background: linear-gradient(135deg, var(--secondary) 0%, #1e293b 100%);
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+      border-bottom: 5px solid var(--primary);
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -20%;
+      width: 60%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(16,185,129,0.15) 0%, rgba(0,0,0,0) 70%);
+      pointer-events: none;
+    }
+
+    .logo-container {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .logo-icon {
+      background-color: var(--primary);
+      color: var(--secondary);
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: bold;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+    }
+
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    h1 span {
+      color: var(--primary);
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-top: 4px;
+      color: #94a3b8;
+    }
+
+    /* Responsive Layout Grid */
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 40px;
+    }
+
+    /* Fixed/Sticky Sidebar Navigation */
+    .sidebar {
+      position: sticky;
+      top: 40px;
+      height: fit-content;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .sidebar h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      color: var(--text-dark);
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+    }
+
+    .sidebar li {
+      margin-bottom: 12px;
+    }
+
+    .sidebar a {
+      color: var(--text-main);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s ease;
+    }
+
+    .sidebar a:hover {
+      background-color: var(--primary-light);
+      color: var(--primary-dark);
+    }
+
+    /* Main Content Styling */
+    main {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    section {
+      margin-bottom: 40px;
+      scroll-margin-top: 40px;
+    }
+
+    section:not(:last-child) {
+      padding-bottom: 40px;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px;
+      color: var(--text-dark);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    h2::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 24px;
+      background-color: var(--primary);
+      border-radius: var(--radius-sm);
+    }
+
+    h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      color: var(--text-dark);
+      margin: 20px 0 10px 0;
+    }
+
+    p {
+      margin-bottom: 16px;
+      font-size: 15px;
+      color: var(--text-main);
+    }
+
+    /* Alert / Callout Box */
+    .callout {
+      background-color: #f0fdf4;
+      border-left: 4px solid var(--primary);
+      padding: 20px;
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin: 24px 0;
+      display: flex;
+      gap: 16px;
+    }
+
+    .callout-icon {
+      font-size: 24px;
+      color: var(--primary-dark);
+      line-height: 1;
+    }
+
+    .callout-content p {
+      margin: 0;
+      font-size: 14px;
+      color: #065f46;
+      font-weight: 500;
+    }
+
+    /* Lists */
+    ul, ol {
+      margin-left: 20px;
+      margin-bottom: 20px;
+    }
+
+    li {
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      margin: 2px;
+    }
+
+    .badge-admin { background-color: #fee2e2; color: #991b1b; }
+    .badge-seller { background-color: #e0f2fe; color: #075985; }
+    .badge-tech { background-color: #fef3c7; color: #92400e; }
+
+    /* Code blocks */
+    pre {
+      background-color: #0f172a;
+      color: #f8fafc;
+      padding: 16px;
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 13px;
+      margin: 20px 0;
+      border: 1px solid #1e293b;
+    }
+
+    code {
+      font-family: 'Courier New', Courier, monospace;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    pre code {
+      background-color: transparent;
+      color: inherit;
+      padding: 0;
+      font-weight: normal;
+    }
+
+    /* Table styling */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 12px 16px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f1f5f9;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    tr:nth-child(even) {
+      background-color: #f8fafc;
+    }
+
+    /* Footer styling */
+    footer {
+      background-color: var(--secondary);
+      color: var(--text-muted);
+      text-align: center;
+      padding: 40px 20px;
+      margin-top: 60px;
+      border-top: 1px solid #1e293b;
+    }
+
+    /* Mobile Responsive design */
+    @media (max-width: 900px) {
+      .container {
+        grid-template-columns: 1fr;
+        margin: 20px auto;
+        gap: 20px;
+      }
+      .sidebar {
+        position: static;
+        width: 100%;
+      }
+      main {
+        padding: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sleek Modern Header -->
+  <header>
+    <div class="logo-container">
+      <div class="logo-icon">🌱</div>
+      <h1>Spray<span>Precision</span></h1>
+    </div>
+    <div class="subtitle">Guia Oficial do Administrador & Controle Financeiro</div>
+  </header>
+
+  <div class="container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <h3>Conteúdo</h3>
+      <ul>
+        <li><a href="#users">👥 1. Usuários e Perfis</a></li>
+        <li><a href="#finance">💰 2. Gestão Financeira</a></li>
+        <li><a href="#cashflow">📈 A. Fluxo de Caixa</a></li>
+        <li><a href="#sales">🛍️ B. Módulo de Vendas</a></li>
+        <li><a href="#receivables">💵 C. Contas a Receber</a></li>
+        <li><a href="#payables">📉 D. Contas a Pagar</a></li>
+        <li><a href="#commissions">🏅 E. Comissões Geral</a></li>
+        <li><a href="#supabase">🛠️ 3. Supabase Avançado</a></li>
+      </ul>
+    </aside>
+
+    <!-- Main Explanatory Content -->
+    <main>
+      
+      <!-- Section 1 -->
+      <section id="users">
+        <h2>1. Criação e Gestão de Usuários e Perfis</h2>
+        <p>O Spray Precision Manager utiliza o <strong>Supabase Auth</strong> para gerenciar credenciais e login com criptografia de ponta. A criação de novos usuários da equipe comercial ou de campo é facilitada diretamente pelo próprio aplicativo.</p>
+        
+        <h3>Como criar novas contas para a equipe:</h3>
+        <ol>
+          <li>Abra o aplicativo em seu navegador ou celular.</li>
+          <li>Na tela de login, clique no link <strong>"Cadastre-se grátis"</strong> na parte inferior.</li>
+          <li>Insira os dados do colaborador: Nome Completo, E-mail Corporativo, Senha (mínimo de 6 dígitos) e WhatsApp de contato.</li>
+          <li>No seletor de <strong>Função / Perfil de Acesso</strong>, selecione a atribuição operacional correspondente:</li>
+        </ol>
+
+        <table style="margin-top: 15px;">
+          <thead>
+            <tr>
+              <th>Perfil</th>
+              <th>Identificador Interno</th>
+              <th>Principais Permissões</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-admin">Administrador Geral</span></td>
+              <td><code>admin</code></td>
+              <td>Acesso financeiro total, fluxo de caixa corporativo, aprovação e liberação de comissões, cadastro de despesas e override de preço mínimo de bico.</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-seller">Vendedor / Parceiro</span></td>
+              <td><code>seller</code></td>
+              <td>Acesso ao CRM (somente seus próprios leads e clientes), visitas técnicas, simulador agrícola de parcelamento e visão dos seus próprios ganhos.</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-tech">Técnico / Instalador</span></td>
+              <td><code>technician</code></td>
+              <td>Registro de visitas operacionais e laudos de instalação em pulverizadores dos clientes.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <div class="callout-icon">💡</div>
+          <div class="callout-content">
+            <p><strong>Automação de Perfil por Trigger:</strong> Você não precisa registrar o usuário em tabelas separadas. O banco de dados possui uma trigger segura chamada <code>sp_on_auth_user_created</code> que escuta as novas contas criadas no Auth do Supabase e gera instantaneamente a linha correspondente de perfil na tabela <code>sp_profiles</code>.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2 -->
+      <section id="finance">
+        <h2>2. Gestão Financeira e Acesso Administrador</h2>
+        <p>O perfil de <strong>Administrador Geral (admin)</strong> é o único habilitado a ver o módulo contábil e de faturamento global da empresa. Quando você acessa a aba <strong>Financeiro</strong> com esse perfil, o sistema habilita cinco painéis operacionais.</p>
+      </section>
+
+      <!-- Sub-section Cash Flow -->
+      <section id="cashflow">
+        <h2>A. Fluxo de Caixa</h2>
+        <p>Apresenta a saúde financeira consolidada da Spray Precision. O painel compila dinamicamente os valores de todas as tabelas contábeis:</p>
+        <ul>
+          <li><strong>Saldo Projetado:</strong> <code>(Total Recebido + Contas a Receber Vencer/Vencidos) - (Despesas Pagas + Contas a Pagar)</code>.</li>
+          <li>Ajuda a antecipar furos de caixa ou programar investimentos em estoque e peças baseado nos prazos agrícolas vigentes.</li>
+        </ul>
+      </section>
+
+      <!-- Sub-section Sales -->
+      <section id="sales">
+        <h2>B. Módulo de Vendas</h2>
+        <p>Aqui você acompanha o faturamento comercial e gerencia as vendas dos kits eletrostáticos da equipe:</p>
+        <ul>
+          <li><strong>Módulos Isoladores vs Bicos Físicos:</strong> No cadastro de venda, você discrimina o total de bicos físicos da barra e o espaçamento (35cm ou 50cm). A engenharia determina quantos módulos isoladores (bicos eletrostáticos) realmente compõem o kit comercializado (isolador duplo reduz a quantidade necessária em espaçamentos de 35cm). O sistema calcula o valor final baseado no total de módulos de fato cobrados.</li>
+          <li><strong>Override de Preço Mínimo:</strong> A engenharia de campo estipula o custo unitário mínimo de tabela em <strong>R$ 1.100,00 por módulo</strong>. Vendedores comuns são terminantemente bloqueados caso tentem vender abaixo dessa tabela. O administrador recebe um aviso na tela permitindo autorizar (override) um desconto estratégico se necessário.</li>
+          <li><strong>Edição e Segurança:</strong> O painel permite alterar ou excluir vendas incorretas. Contudo, por questões de compliance contábil, <strong>se o cliente já pagou qualquer parcela daquela venda, o sistema bloqueia a edição/exclusão</strong> de forma preventiva.</li>
+        </ul>
+      </section>
+
+      <!-- Sub-section Receivables -->
+      <section id="receivables">
+        <h2>C. Contas a Receber</h2>
+        <p>Gerencie o faturamento das vendas parceladas nos prazos de safra ou safra/safrinha dos agricultores:</p>
+        <ul>
+          <li><strong>Confirmação de Recebimento (Baixa):</strong> Quando o cliente efetua o pagamento de uma parcela (via Pix ou Boleto), o administrador clica no botão de baixa.</li>
+          <li><strong>Liberação de comissão integrada:</strong> No momento exato em que a baixa da parcela é dada no sistema, o banco de dados localiza a comissão proporcional do vendedor correspondente àquela parcela e a altera automaticamente de **Prevista (Expected)** para **Liberada (Released)** no extrato do vendedor.</li>
+        </ul>
+      </section>
+
+      <!-- Sub-section Payables -->
+      <section id="payables">
+        <h2>D. Contas a Pagar (Despesas)</h2>
+        <p>Aba utilizada para lançar custos da empresa. Ela centraliza a saída operacional:</p>
+        <ul>
+          <li>Permite controle de despesas corporativas como: Logística de Campo, Compra de Matéria-prima (mangueiras, conectores, isoladores), Impostos, etc.</li>
+          <li>Assegura que as projeções de saldo líquido no fluxo de caixa permaneçam exatas.</li>
+        </ul>
+      </section>
+
+      <!-- Sub-section Commissions -->
+      <section id="commissions">
+        <h2>E. Comissões Geral</h2>
+        <p>Consolida as comissões devidas aos vendedores. Toda venda gera uma comissão dividida nas mesmas parcelas e vencimentos do contrato comercial.</p>
+        <p>As comissões passam pelos seguintes estados de faturamento:</p>
+        <ol>
+          <li><strong>Prevista (Expected):</strong> Vinculada a parcelas do cliente que ainda estão em aberto.</li>
+          <li><strong>Liberada (Released):</strong> Disponível para repasse ao vendedor, pois a respectiva parcela já foi recebida pela empresa.</li>
+          <li><strong>Paga (Paid):</strong> Repasse já realizado. Ao marcar como paga, o sistema <strong>gera automaticamente um lançamento de saída idêntico no módulo Contas a Pagar</strong> na categoria de despesa "Comissão", registrando a saída contábil líquida sem retrabalho.</li>
+        </ol>
+      </section>
+
+      <!-- Section 3 -->
+      <section id="supabase">
+        <h2>3. Supabase Avançado: Alterando Perfis Manualmente</h2>
+        <p>Se você precisar promover ou alterar a função de um usuário já existente manualmente (por exemplo, promover um Vendedor para Administrador Geral), o painel do Supabase pode restringir a edição visual direta ou o comando SQL <code>UPDATE</code> direto na tabela <code>auth.users</code> devido a políticas de segurança e permissões (<code>ERROR: 42501: permission denied for table users</code>).</p>
+        <p>A forma mais rápida, segura e <strong>100% garantida</strong> de fazer isso é utilizando uma <strong>função auxiliar com privilégios de superusuário (<code>SECURITY DEFINER</code>)</strong>.</p>
+        
+        <h3>Passo a passo para promover/alterar perfil via SQL Editor:</h3>
+        <ol>
+          <li>Acesse o seu console em <strong>supabase.com</strong> e entre no projeto correspondente.</li>
+          <li>Vá no menu lateral e acesse o <strong>SQL Editor</strong>.</li>
+          <li>Crie a função de segurança executando o script abaixo (você só precisa criar esta função uma vez no projeto):
+            <pre><code>CREATE OR REPLACE FUNCTION public.sp_promote_user(user_email TEXT, new_role TEXT)
+RETURNS VOID SECURITY DEFINER SET search_path = public, auth AS $$
+BEGIN
+  -- 1. Atualiza os metadados internos de autenticação do Supabase
+  UPDATE auth.users
+  SET raw_user_meta_data = COALESCE(raw_user_meta_data, '{}'::jsonb) || jsonb_build_object('role', new_role)
+  WHERE email = user_email;
+
+  -- 2. Atualiza a tabela sp_profiles do SaaS
+  UPDATE public.sp_profiles
+  SET role = new_role
+  WHERE email = user_email;
+END;
+$$ LANGUAGE plpgsql;</code></pre>
+          </li>
+          <li>Com a função criada, execute o comando abaixo para promover o usuário desejado (ajuste o e-mail e a role para <code>'admin'</code>, <code>'seller'</code> ou <code>'technician'</code>):
+            <pre><code>SELECT public.sp_promote_user('admin@spray.com', 'admin');</code></pre>
+          </li>
+          <li>Clique no botão verde <strong>Run</strong>.</li>
+        </ol>
+        <p>Pronto! As duas tabelas (<code>auth.users</code> e <code>sp_profiles</code>) serão atualizadas simultaneamente e com segurança. O usuário terá acesso instantâneo ao novo painel no próximo login ou simplesmente atualizando a página.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Styled Footer -->
+  <footer>
+    <p>© 2026 Spray Precision. Todos os direitos reservados. Manual Técnico do Administrador.</p>
+  </footer>
+
+</body>
+</html>
