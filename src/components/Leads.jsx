@@ -145,6 +145,8 @@ const Leads = ({ user, activeQuickAction, onClearQuickAction, setCurrentTab, set
       setLoading(true);
       const payload = {
         ...formData,
+        next_action_date: formData.next_action_date ? formData.next_action_date : null,
+        next_action: formData.next_action ? formData.next_action : null,
         estimated_sprayers_count: formData.estimated_sprayers_count ? parseInt(formData.estimated_sprayers_count) : null,
         owner_id: editingLead ? editingLead.owner_id : user.id,
         created_by: editingLead ? editingLead.created_by : user.id
