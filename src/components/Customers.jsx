@@ -304,10 +304,10 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
   };
 
   return (
-    <div>
+    <div style={{ minWidth: 0, width: '100%', maxWidth: '100%' }}>
       {/* 1. DIRECTORY LIST OR DUAL LAYER DETAILS */}
       {!selectedCustomer ? (
-        <div>
+        <div style={{ minWidth: 0, width: '100%', maxWidth: '100%' }}>
           <div className="flex justify-between align-center" style={{ marginBottom: '20px' }}>
             <h2 style={{ fontSize: '20px' }}>Carteira de Clientes</h2>
             <button onClick={handleOpenAddCustomer} className="btn btn-primary">
@@ -430,7 +430,7 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
         </div>
       ) : (
         /* 2. DYNAMIC COMPREHENSIVE DETAIL TABS PANEL */
-        <div>
+        <div style={{ minWidth: 0, width: '100%', maxWidth: '100%' }}>
           {/* NATIVE APP-LIKE COMPACT STICKY HEADER */}
           <div className="detail-header" style={{ 
             display: 'flex', 

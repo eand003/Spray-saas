@@ -80,7 +80,7 @@ const Layout = ({ children, currentTab, setCurrentTab, user, onLogout }) => {
       </header>
 
       {/* Main Grid containing page views */}
-      <div className="flex" style={{ width: '100%' }}>
+      <div className="flex" style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
         {/* Navigation panel */}
         <nav className="bottom-nav">
           {navItems.map((item) => {
