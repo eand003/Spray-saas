@@ -496,7 +496,17 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
           </div>
 
           {/* Swipeable Tabs Bar */}
-          <div className="tabs-container" style={{ marginBottom: '16px' }}>
+          <div className="tabs-container scroll-hide" style={{ 
+            display: 'flex', 
+            overflowX: 'auto', 
+            flexWrap: 'nowrap', 
+            width: '100%',
+            maxWidth: '100%',
+            borderBottom: '1px solid var(--gray-200)',
+            marginBottom: '16px', 
+            gap: '8px',
+            WebkitOverflowScrolling: 'touch' /* Smooth momentum scrolling on iOS */
+          }}>
             <button className={`tab-btn ${activeTab === 'summary' ? 'active' : ''}`} onClick={() => setActiveTab('summary')}>
               Resumo
             </button>
@@ -597,19 +607,19 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
                   <p style={{ textAlign: 'center', color: 'var(--gray-500)', padding: '20px' }}>Nenhuma fazenda cadastrada.</p>
                 ) : (
                   farms.map(f => (
-                    <div key={f.id} className="mobile-card">
-                      <h4 style={{ fontSize: '15px', fontWeight: 700 }}>{f.name}</h4>
+                    <div key={f.id} className="mobile-card" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+                      <h4 style={{ fontSize: '15px', fontWeight: 700, wordBreak: 'break-word' }}>{f.name}</h4>
                       <p style={{ fontSize: '13px', color: 'var(--gray-500)', marginTop: '2px' }}>
                         📍 {f.city} - {f.state}
                       </p>
-                      <div className="flex flex-wrap gap-2" style={{ marginTop: '10px', fontSize: '13px' }}>
+                      <div className="flex flex-wrap gap-2" style={{ marginTop: '10px', fontSize: '13px', wordBreak: 'break-word' }}>
                         {f.area_hectares && <span><strong>Área:</strong> {f.area_hectares} ha</span>}
                         {f.main_crops && f.main_crops.length > 0 && (
                           <span>• <strong>Culturas:</strong> {f.main_crops.join(', ')}</span>
                         )}
                       </div>
                       {f.notes && (
-                        <p style={{ fontSize: '12px', color: 'var(--gray-500)', marginTop: '6px', fontStyle: 'italic' }}>
+                        <p style={{ fontSize: '12px', color: 'var(--gray-500)', marginTop: '6px', fontStyle: 'italic', wordBreak: 'break-word' }}>
                           "{f.notes}"
                         </p>
                       )}
@@ -652,23 +662,15 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
                         <p style={{ fontSize: '13px', color: 'var(--gray-500)', marginTop: '2px' }}>
                           🚜 Fazenda: {farm ? farm.name : 'Sede'} {s.year ? `• Ano: ${s.year}` : ''}
                         </p>
-                        <div style={{ 
-                          display: 'grid', 
-                          gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', 
-                          gap: '8px 16px', 
-                          marginTop: '12px', 
-                          fontSize: '13px',
-                          borderTop: '1px solid var(--gray-100)',
-                          paddingTop: '12px'
-                        }}>
-                          <div><span style={{ color: 'var(--gray-500)' }}>Barra:</span> <strong>{s.boom_width_m || '--'} m</strong></div>
-                          <div><span style={{ color: 'var(--gray-500)' }}>Bicos:</span> <strong>{s.nozzle_count || '--'} bicos</strong></div>
-                          <div><span style={{ color: 'var(--gray-500)' }}>Espaço:</span> <strong>{s.nozzle_spacing_cm || '--'} cm</strong></div>
-                          <div><span style={{ color: 'var(--gray-500)' }}>Modelo Bico:</span> <strong>{s.current_nozzle_model || '--'}</strong></div>
-                          <div><span style={{ color: 'var(--gray-500)' }}>Vazão Calda:</span> <strong>{s.flow_rate_l_ha || '--'} L/ha</strong></div>
-                          <div><span style={{ color: 'var(--gray-500)' }}>Velocidade:</span> <strong>{s.working_speed_km_h || '--'} km/h</strong></div>
-                          <div><span style={{ color: 'var(--gray-500)' }}>Nº Série:</span> <strong>{s.serial_number || '--'}</strong></div>
-                          <div><span style={{ color: 'var(--gray-500)' }}>Monitor:</span> <strong>{s.controller_monitor || '--'}</strong></div>
+                        <div className="detail-info-grid" style={{ borderTop: '1px solid var(--gray-200)' }}>
+                          <div><span style={{ color: 'var(--gray-600)' }}>Barra:</span> <strong>{s.boom_width_m || '--'} m</strong></div>
+                          <div><span style={{ color: 'var(--gray-600)' }}>Bicos:</span> <strong>{s.nozzle_count || '--'} bicos</strong></div>
+                          <div><span style={{ color: 'var(--gray-600)' }}>Espaço:</span> <strong>{s.nozzle_spacing_cm || '--'} cm</strong></div>
+                          <div><span style={{ color: 'var(--gray-600)' }}>Modelo Bico:</span> <strong>{s.current_nozzle_model || '--'}</strong></div>
+                          <div><span style={{ color: 'var(--gray-600)' }}>Vazão Calda:</span> <strong>{s.flow_rate_l_ha || '--'} L/ha</strong></div>
+                          <div><span style={{ color: 'var(--gray-600)' }}>Velocidade:</span> <strong>{s.working_speed_km_h || '--'} km/h</strong></div>
+                          <div><span style={{ color: 'var(--gray-600)' }}>Nº Série:</span> <strong>{s.serial_number || '--'}</strong></div>
+                          <div><span style={{ color: 'var(--gray-600)' }}>Monitor:</span> <strong>{s.controller_monitor || '--'}</strong></div>
                         </div>
                         {s.notes && (
                           <p style={{ fontSize: '12px', color: 'var(--gray-500)', marginTop: '6px', fontStyle: 'italic' }}>
@@ -713,20 +715,11 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
                         <p style={{ fontSize: '13px', color: 'var(--gray-700)', marginTop: '2px' }}>
                           🔧 Máquina: {sprayer ? `${sprayer.brand} ${sprayer.model}` : 'Pulverizador'}
                         </p>
-                        <div style={{ 
-                          display: 'grid', 
-                          gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', 
-                          gap: '8px 16px', 
-                          marginTop: '12px', 
-                          fontSize: '13px',
-                          borderTop: '1px solid rgba(16, 185, 129, 0.15)',
-                          paddingTop: '12px',
-                          color: 'var(--gray-800)'
-                        }}>
-                          <div><span style={{ color: 'var(--gray-500)' }}>Bicos Indução:</span> <strong>{k.installed_points_count || '--'}</strong></div>
-                          <div><span style={{ color: 'var(--gray-500)' }}>Versão Kit:</span> <strong>{k.version}</strong></div>
-                          <div><span style={{ color: 'var(--gray-500)' }}>Série Painel:</span> <strong>{k.panel_serial_number || '--'}</strong></div>
-                          <div><span style={{ color: 'var(--gray-500)' }}>Garantia:</span> <strong style={{ color: '#d97706' }}>{k.warranty_until ? formatDate(k.warranty_until) : '--'}</strong></div>
+                        <div className="detail-info-grid" style={{ borderTop: '1px solid rgba(16, 185, 129, 0.15)', color: 'var(--gray-800)' }}>
+                          <div><span style={{ color: 'var(--gray-600)' }}>Bicos Indução:</span> <strong>{k.installed_points_count || '--'}</strong></div>
+                          <div><span style={{ color: 'var(--gray-600)' }}>Versão Kit:</span> <strong>{k.version}</strong></div>
+                          <div><span style={{ color: 'var(--gray-600)' }}>Série Painel:</span> <strong>{k.panel_serial_number || '--'}</strong></div>
+                          <div><span style={{ color: 'var(--gray-600)' }}>Garantia:</span> <strong style={{ color: '#d97706' }}>{k.warranty_until ? formatDate(k.warranty_until) : '--'}</strong></div>
                         </div>
                         {k.technical_notes && (
                           <div style={{ fontSize: '12px', color: 'var(--primary-dark)', marginTop: '8px', backgroundColor: 'rgba(255,255,255,0.7)', padding: '6px', borderRadius: '4px' }}>
