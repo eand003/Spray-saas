@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Target, Search, Filter, Phone, Calendar, Plus, Edit2, CheckCircle2, AlertCircle, Trash2 } from 'lucide-react';
+import { Target, Search, Filter, Phone, Calendar, Plus, Edit2, CheckCircle2, AlertCircle, Trash2, MapPin, Navigation } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { getLeadStatusLabel, formatDate, OPTIONS } from '../utils/helpers';
 import Modal from './UI/Modal';
@@ -14,6 +14,9 @@ const Leads = ({ user, activeQuickAction, onClearQuickAction, setCurrentTab, set
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingLead, setEditingLead] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [latitude, setLatitude] = useState('');
+  const [longitude, setLongitude] = useState('');
+  const [geoLocating, setGeoLocating] = useState(false);
   
   // Form fields
   const [formData, setFormData] = useState({
@@ -87,6 +90,8 @@ const Leads = ({ user, activeQuickAction, onClearQuickAction, setCurrentTab, set
 
   const handleOpenAddModal = () => {
     setEditingLead(null);
+    setLatitude('');
+    setLongitude('');
     setFormData({
       name: '',
       company_name: '',
@@ -108,6 +113,13 @@ const Leads = ({ user, activeQuickAction, onClearQuickAction, setCurrentTab, set
 
   const handleOpenEditModal = (lead) => {
     setEditingLead(lead);
+    const gpsMatch = lead.notes && lead.notes.match(/\[GPS:\s*(-?\d+\.\d+),\s*(-?\d+\.\d+)\]/);
+    const lat = gpsMatch ? gpsMatch[1] : '';
+    const lng = gpsMatch ? gpsMatch[2] : '';
+    setLatitude(lat);
+    setLongitude(lng);
+    const cleanNotes = lead.notes ? lead.notes.replace(/\[GPS:\s*(-?\d+\.\d+),\s*(-?\d+\.\d+)\]/g, '').trim() : '';
+
     setFormData({
       name: lead.name,
       company_name: lead.company_name || '',
@@ -120,7 +132,7 @@ const Leads = ({ user, activeQuickAction, onClearQuickAction, setCurrentTab, set
       status: lead.status,
       main_crop: lead.main_crop || 'Soja',
       estimated_sprayers_count: lead.estimated_sprayers_count || '',
-      notes: lead.notes || '',
+      notes: cleanNotes,
       next_action: lead.next_action || '',
       next_action_date: lead.next_action_date || ''
     });
@@ -130,6 +142,29 @@ const Leads = ({ user, activeQuickAction, onClearQuickAction, setCurrentTab, set
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleCaptureLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Seu navegador ou dispositivo não possui suporte a geolocalização.');
+      return;
+    }
+
+    setGeoLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude: lat, longitude: lng } = position.coords;
+        setLatitude(lat.toFixed(6));
+        setLongitude(lng.toFixed(6));
+        setGeoLocating(false);
+      },
+      (error) => {
+        console.error('Erro de GPS:', error);
+        alert('Não foi possível obter sua localização exata. Verifique se o GPS e as permissões estão ativos.');
+        setGeoLocating(false);
+      },
+      { enableHighAccuracy: true, timeout: 8000 }
+    );
   };
 
   const handleSubmit = async (e) => {
@@ -143,8 +178,15 @@ const Leads = ({ user, activeQuickAction, onClearQuickAction, setCurrentTab, set
 
     try {
       setLoading(true);
+      let cleanNotes = formData.notes || '';
+      cleanNotes = cleanNotes.replace(/\[GPS:\s*(-?\d+\.\d+),\s*(-?\d+\.\d+)\]/g, '').trim();
+      const finalNotes = (latitude && longitude)
+        ? `${cleanNotes}\n\n[GPS: ${latitude}, ${longitude}]`.trim()
+        : cleanNotes;
+
       const payload = {
         ...formData,
+        notes: finalNotes,
         next_action_date: formData.next_action_date ? formData.next_action_date : null,
         next_action: formData.next_action ? formData.next_action : null,
         estimated_sprayers_count: formData.estimated_sprayers_count ? parseInt(formData.estimated_sprayers_count) : null,
@@ -342,8 +384,14 @@ const Leads = ({ user, activeQuickAction, onClearQuickAction, setCurrentTab, set
         </div>
       ) : (
         <div className="mobile-card-list">
-          {filteredLeads.map((ld) => (
-            <div key={ld.id} className="mobile-card">
+          {filteredLeads.map((ld) => {
+            const gpsMatch = ld.notes && ld.notes.match(/\[GPS:\s*(-?\d+\.\d+),\s*(-?\d+\.\d+)\]/);
+            const cardLat = gpsMatch ? gpsMatch[1] : null;
+            const cardLng = gpsMatch ? gpsMatch[2] : null;
+            const displayNotes = ld.notes ? ld.notes.replace(/\[GPS:\s*(-?\d+\.\d+),\s*(-?\d+\.\d+)\]/g, '').trim() : '';
+
+            return (
+              <div key={ld.id} className="mobile-card">
               <div className="mobile-card-header">
                 <div>
                   <h3 className="mobile-card-title">{ld.name}</h3>
@@ -381,10 +429,37 @@ const Leads = ({ user, activeQuickAction, onClearQuickAction, setCurrentTab, set
                 </div>
               )}
 
-              {ld.notes && (
+              {displayNotes && (
                 <p style={{ fontSize: '13px', color: 'var(--gray-500)', marginBottom: '12px', fontStyle: 'italic' }}>
-                  "{ld.notes}"
+                  "{displayNotes}"
                 </p>
+              )}
+
+              {/* Geo Coordinate links */}
+              {cardLat && (
+                <div className="flex justify-between align-center" style={{ 
+                  marginTop: '4px', 
+                  padding: '8px 12px', 
+                  backgroundColor: 'var(--gray-50)', 
+                  borderRadius: 'var(--radius-sm)',
+                  fontSize: '12px',
+                  border: '1px solid var(--gray-200)',
+                  marginBottom: '12px'
+                }}>
+                  <span style={{ color: 'var(--gray-500)', fontFamily: 'monospace' }}>
+                    Coordenadas: {cardLat}, {cardLng}
+                  </span>
+                  <a 
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${cardLat},${cardLng}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex align-center gap-1"
+                    style={{ fontWeight: 600, color: 'var(--primary)' }}
+                  >
+                    <Navigation size={12} />
+                    Abrir no Maps
+                  </a>
+                </div>
               )}
 
               {/* ACTION SHORTCUT BUTTONS */}
@@ -436,8 +511,9 @@ const Leads = ({ user, activeQuickAction, onClearQuickAction, setCurrentTab, set
                   <Trash2 size={14} />
                 </button>
               </div>
-            </div>
-          ))}
+              </div>
+            );
+          })}
         </div>
       )}
 
@@ -600,6 +676,54 @@ const Leads = ({ user, activeQuickAction, onClearQuickAction, setCurrentTab, set
                   value={formData.next_action} 
                   onChange={handleInputChange} 
                   placeholder="Ex: Ligar para agendar"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* GEOLOCATION GPS BUTTON */}
+          <div className="geo-container" style={{ 
+            border: '1px solid var(--gray-200)', 
+            padding: '12px', 
+            borderRadius: 'var(--radius-md)',
+            backgroundColor: 'var(--gray-50)',
+            marginBottom: '16px' 
+          }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600, color: 'var(--primary-dark)', marginBottom: '8px' }}>
+              <MapPin size={16} /> Localização da Fazenda (Opcional)
+            </label>
+            <div className="flex gap-2" style={{ marginBottom: '8px' }}>
+              <button 
+                type="button" 
+                onClick={handleCaptureLocation} 
+                className="btn btn-secondary"
+                style={{ flex: 1, height: '40px', display: 'flex', gap: '6px', fontSize: '13px', padding: '8px 12px', justifyContent: 'center' }}
+                disabled={geoLocating}
+              >
+                <Navigation size={14} className={geoLocating ? 'spin-anim' : ''} />
+                {geoLocating ? 'Localizando...' : 'Capturar Coordenadas no Campo'}
+              </button>
+            </div>
+            
+            <div className="form-row" style={{ marginTop: '8px' }}>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label style={{ fontSize: '11px', fontWeight: 600 }}>Latitude</label>
+                <input 
+                  type="text" 
+                  placeholder="Ex: -21.178"
+                  value={latitude}
+                  onChange={(e) => setLatitude(e.target.value)}
+                  style={{ padding: '6px 10px', fontSize: '13px' }}
+                />
+              </div>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label style={{ fontSize: '11px', fontWeight: 600 }}>Longitude</label>
+                <input 
+                  type="text" 
+                  placeholder="Ex: -47.812"
+                  value={longitude}
+                  onChange={(e) => setLongitude(e.target.value)}
+                  style={{ padding: '6px 10px', fontSize: '13px' }}
                 />
               </div>
             </div>
