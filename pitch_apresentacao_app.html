@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apresentação Interativa - CRM Spray Precision</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* =========================================================================
+       THE EXACT DESIGN SYSTEM & STYLES OF THE SPRAY PRECISION APP
+       ========================================================================= */
+    :root {
+      --primary: #10b981;          /* Emerald Green */
+      --primary-hover: #059669;
+      --primary-light: #ecfdf5;
+      --primary-dark: #064e3b;     /* Forest Jungle Green */
+      
+      --secondary: #6366f1;        /* Indigo Tech Indigo */
+      --secondary-hover: #4f46e5;
+      
+      --dark: #1f2937;             /* Dark Gray charcoal */
+      --light: #f9fafb;            /* Soft off-white */
+      --white: #ffffff;
+      
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-400: #9ca3af;
+      --gray-500: #6b7280;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+
+      /* Status Badges */
+      --status-new: #3b82f6;       /* Blue */
+      --status-new-bg: #eff6ff;
+      --status-contact: #a855f7;   /* Purple */
+      --status-contact-bg: #faf5ff;
+      --status-scheduled: #eab308; /* Yellow */
+      --status-scheduled-bg: #fef9c3;
+      --status-visited: #06b6d4;   /* Cyan */
+      --status-visited-bg: #ecfeff;
+      --status-negotiating: #f97316;/* Orange */
+      --status-negotiating-bg: #fff7ed;
+      --status-won: #10b981;       /* Emerald */
+      --status-won-bg: #ecfdf5;
+      --status-lost: #ef4444;      /* Red */
+      --status-lost-bg: #fef2f2;
+      
+      /* Fonts */
+      --font-title: 'Outfit', 'Inter', sans-serif;
+      --font-body: 'Inter', sans-serif;
+
+      /* Shadows */
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+      
+      /* Radius */
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      
+      --nav-height: 64px;
+      --mobile-nav-height: 68px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--gray-100);
+      color: var(--gray-800);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      padding-bottom: 80px; /* Space for bottom nav */
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-title);
+      color: var(--gray-900);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    /* Top App Header Replica */
+    .app-header {
+      background-color: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      height: var(--nav-height);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+    }
+
+    .header-container {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-text {
+      font-family: var(--font-title);
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+    }
+
+    .logo-text span {
+      color: var(--primary);
+      font-weight: 500;
+      margin-left: 4px;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Main Container */
+    .main-content {
+      padding: 16px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Common Card Layout */
+    .card {
+      background-color: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--gray-200);
+      margin-bottom: 16px;
+    }
+
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .align-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-1 { gap: 4px; }
+    .gap-2 { gap: 8px; }
+    .gap-3 { gap: 12px; }
+
+    /* Button and Badges */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: var(--white);
+    }
+
+    .btn-secondary {
+      background-color: var(--white);
+      color: var(--gray-700);
+      border: 1px solid var(--gray-300);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 50px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      width: fit-content;
+    }
+
+    .badge-new { background-color: var(--status-new-bg); color: var(--status-new); }
+    .badge-contact_made { background-color: var(--status-contact-bg); color: var(--status-contact); }
+    .badge-negotiating { background-color: var(--status-negotiating-bg); color: var(--status-negotiating); }
+    .badge-won { background-color: var(--status-won-bg); color: var(--status-won); }
+
+    /* Search & Filter select styling matching the new dropdown filter */
+    .search-input-wrapper {
+      position: relative;
+      width: 100%;
+      margin-bottom: 12px;
+    }
+
+    .search-input-wrapper svg {
+      position: absolute;
+      left: 14px;
+      top: 14px;
+      color: var(--gray-400);
+    }
+
+    .search-input-wrapper input {
+      width: 100%;
+      padding: 12px 16px 12px 42px;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      outline: none;
+      background: var(--white);
+    }
+
+    .filter-dropdown-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .filter-dropdown-container select {
+      height: 42px;
+      padding: 8px 12px;
+      font-size: 14px;
+      border-radius: var(--radius-md);
+      background-color: var(--white);
+      color: var(--gray-800);
+      border: 1px solid var(--gray-300);
+      font-weight: 500;
+      flex: 1;
+      outline: none;
+    }
+
+    /* Leads Mobile Cards Styling */
+    .mobile-card {
+      background-color: var(--white);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      border: 1px solid var(--gray-200);
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .mobile-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      gap: 12px;
+    }
+
+    .mobile-card-header > div:first-child {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .mobile-card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-900);
+      white-space: normal;
+      word-break: break-word;
+    }
+
+    .mobile-card-subtitle {
+      font-size: 13px;
+      color: var(--gray-500);
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .gps-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      padding: 8px 12px;
+      background-color: var(--gray-50);
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      border: 1px solid var(--gray-200);
+      margin-bottom: 12px;
+    }
+
+    .mobile-card-actions-col {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+      border-top: 1px solid var(--gray-100);
+      padding-top: 12px;
+    }
+
+    .mobile-card-actions-row {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid var(--gray-200);
+      background-color: var(--gray-50);
+      color: var(--gray-700);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .action-btn-primary {
+      background-color: var(--primary-light);
+      color: var(--primary-dark);
+      border-color: rgba(16, 185, 129, 0.2);
+    }
+
+    .action-btn-whatsapp {
+      background-color: #25d366;
+      color: var(--white);
+      border-color: #25d366;
+    }
+
+    /* Bottom Menu Replica */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--mobile-nav-height);
+      background-color: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid var(--gray-200);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 100;
+      box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.04);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--gray-500);
+      font-size: 11px;
+      font-weight: 500;
+      height: 100%;
+      width: 20%;
+      gap: 4px;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
+
+    .nav-item.active {
+      color: var(--primary);
+    }
+
+    .nav-item svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    /* View Panes */
+    .view-pane {
+      display: none;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .view-pane.active {
+      display: block;
+    }
+
+    /* Custom Presentation Elements */
+    .pitch-badge {
+      background: #eff6ff;
+      color: #3b82f6;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 50px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .value-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .value-box {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .value-icon {
+      color: var(--primary);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .value-text h4 {
+      font-size: 14px;
+      color: var(--gray-900);
+      margin-bottom: 2px;
+    }
+
+    .value-text p {
+      font-size: 12.5px;
+      color: var(--gray-500);
+      line-height: 1.4;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP APP HEADER REPLICA -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="logo-area">
+        <!-- Sprout Icon -->
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        <h1 class="logo-text">
+          Spray<span style="color: var(--primary); font-weight: 500; margin-left: 4px;">Precision</span>
+        </h1>
+      </div>
+      
+      <div class="flex align-center gap-2">
+        <!-- Initials Avatar -->
+        <div class="user-avatar" title="Jonas Augusto">
+          JO
+        </div>
+        <!-- Logout icon -->
+        <button style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: var(--gray-100); border: none; border-radius: 50%; color: var(--gray-700);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN VIEW CONTENT -->
+  <main class="main-content">
+
+    <!-- ======================= TAB 1: DASHBOARD (PITCH DRIVERS) ======================= -->
+    <div id="pane-dashboard" class="view-pane active">
+      <div class="pitch-badge">
+        <span>📊 APRESENTAÇÃO ESTRATÉGICA</span>
+      </div>
+      <h2 style="font-size: 20px; margin-bottom: 6px; color: var(--primary-dark);">Métricas e Valores para a Diretoria</h2>
+      <p style="font-size: 14px; color: var(--gray-500); margin-bottom: 20px;">Por que o CRM Spray Precision é essencial para a nossa operação comercial?</p>
+
+      <!-- Stat Cards (Dashboard Replica) -->
+      <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 12px; margin-bottom: 16px;">
+        <div class="card" style="margin-bottom: 0; display: flex; align-items: center; gap: 12px; padding: 14px;">
+          <div style="background: var(--primary-light); color: var(--primary); font-size: 24px; font-weight: 800; width: 50px; height: 50px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center;">
+            +45%
+          </div>
+          <div>
+            <h4 style="font-size: 13px; color: var(--gray-900);">Logística</h4>
+            <p style="font-size: 11px; color: var(--gray-500);">Rotas de campo inteligentes</p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 0; display: flex; align-items: center; gap: 12px; padding: 14px;">
+          <div style="background: #eff6ff; color: #3b82f6; font-size: 24px; font-weight: 800; width: 50px; height: 50px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center;">
+            -30%
+          </div>
+          <div>
+            <h4 style="font-size: 13px; color: var(--gray-900);">Custos de Garantia</h4>
+            <p style="font-size: 11px; color: var(--gray-500);">Kits com séries vinculadas</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 16px; border-bottom: 1px solid var(--gray-200); padding-bottom: 8px; margin-bottom: 12px;">Nossos Diferenciais Estratégicos</h3>
+        <div class="value-grid">
+          <div class="value-box">
+            <svg class="value-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3 6 9 3 15 6 21 3 21 18 15 15 9 18 3 15"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+            <div class="value-text">
+              <h4>Georreferenciamento Preciso</h4>
+              <p>Mapeamento de fazendas com satélite e ativação de rotas pelo Google Maps com 1 clique.</p>
+            </div>
+          </div>
+          <div class="value-box">
+            <svg class="value-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <div class="value-text">
+              <h4>Visitas Auditadas com Mídias</h4>
+              <p>Históricos de visitas técnicas com fotos das máquinas anexadas, garantindo integridade das vistorias.</p>
+            </div>
+          </div>
+          <div class="value-box">
+            <svg class="value-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>
+            <div class="value-text">
+              <h4>Garantias Totalmente Rastreáveis</h4>
+              <p>Vinculação do Kit Eletrostático ao pulverizador e número do painel. Garantia calculada de forma exata na nuvem.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ======================= TAB 2: CRM LEADS REPLICA ======================= -->
+    <div id="pane-leads" class="view-pane">
+      <div class="flex justify-between align-center" style="margin-bottom: 20px;">
+        <h2 style="font-size: 20px;">Gestão de Leads (CRM)</h2>
+        <button class="btn btn-primary" style="padding: 8px 14px; font-size: 13px; display: inline-flex; gap: 4px;">
+          <span>+ Cadastrar</span>
+        </button>
+      </div>
+
+      <!-- Live replica of search and dropdown filter -->
+      <div class="search-input-wrapper">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Buscar por produtor, fazenda..." value="" disabled />
+      </div>
+
+      <div class="filter-dropdown-container">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        <span style="font-size: 13px; font-weight: 600; color: var(--gray-600); white-space: nowrap;">Filtrar Status:</span>
+        <select>
+          <option value="">Todos os Status (Demonstração)</option>
+          <option value="new">Novo</option>
+          <option value="contact_made">Contato Feito</option>
+          <option value="negotiating">Em Negociação</option>
+        </select>
+      </div>
+
+      <!-- Real Leads Card List -->
+      <div class="mobile-card">
+        <div class="mobile-card-header">
+          <div>
+            <h3 class="mobile-card-title">demo-Marcos da Silva (Fazenda Ouro Verde)</h3>
+            <div class="mobile-card-subtitle">
+              <span>📍 Ribeirão Preto - SP</span>
+              <span>•</span>
+              <span>🌾 Soja</span>
+            </div>
+          </div>
+          <span class="badge badge-negotiating">Negociação</span>
+        </div>
+
+        <div style="font-size: 13px; color: var(--gray-600); margin-bottom: 8px;">
+          <strong>Grupo:</strong> Grupo Silva & Filhos
+        </div>
+
+        <div style="font-size: 13px; background-color: var(--gray-100); padding: 8px 12px; border-radius: var(--radius-sm); margin-bottom: 12px; border-left: 3px solid var(--status-scheduled);">
+          <div class="flex align-center gap-1" style="fontWeight: 600; color: var(--gray-700); font-size: 12px;">
+            📆 Próxima ação: 28/05/2026
+          </div>
+          <div style="color: var(--gray-600); font-size: 12px; margin-top: 2px;">Apresentar proposta do kit de bicos eletrostáticos e simular economia</div>
+        </div>
+
+        <p style="font-size: 13px; color: var(--gray-500); margin-bottom: 12px; font-style: italic;">
+          "DEMO: Produtor muito focado em tecnologia e redução de deriva. Demonstrado interesse em bicos eletrostáticos e menor volume de calda. Possui pulverizadores em ótimo estado."
+        </p>
+
+        <!-- Dynamic GPS routing box -->
+        <div class="gps-container">
+          <span style="color: var(--gray-500); font-family: monospace;">GPS: -21.178904, -47.806782</span>
+          <a href="#" class="flex align-center gap-1" style="font-weight: 600; color: var(--primary); text-decoration: none; font-size: 12px;">
+            📍 Abrir no Maps
+          </a>
+        </div>
+
+        <!-- Optimized 2-row buttons layout -->
+        <div class="mobile-card-actions-col">
+          <div class="mobile-card-actions-row">
+            <a href="#" class="action-btn action-btn-whatsapp">WhatsApp</a>
+            <button class="action-btn action-btn-primary">Nova Visita</button>
+          </div>
+          <div class="mobile-card-actions-row">
+            <button class="action-btn" style="color: var(--primary); border-color: var(--primary);">Converter</button>
+            <div class="flex gap-2" style="margin-left: auto;">
+              <button class="action-btn" style="width: 44px; height: 40px;">✏️</button>
+              <button class="action-btn" style="width: 44px; height: 40px; color: #ef4444; border-color: #ef4444;">🗑️</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mobile-card">
+        <div class="mobile-card-header">
+          <div>
+            <h3 class="mobile-card-title">demo-Agropecuária Rio Doce (Fazenda Santa Fé)</h3>
+            <div class="mobile-card-subtitle">
+              <span>📍 Sorriso - MT</span>
+              <span>•</span>
+              <span>🌾 Milho</span>
+            </div>
+          </div>
+          <span class="badge badge-contact_made">Contato</span>
+        </div>
+
+        <div style="font-size: 13px; color: var(--gray-600); margin-bottom: 8px;">
+          <strong>Grupo:</strong> Grupo Rio Doce S/A
+        </div>
+
+        <div style="font-size: 13px; color: var(--gray-500); margin-bottom: 12px; font-style: italic;">
+          "DEMO: Contato inicial realizado na feira agrícola da região. Produtor reclama de alto gasto com defensivos e quer conhecer o sistema de pulverização eletrostática localizada."
+        </div>
+
+        <div class="gps-container">
+          <span style="color: var(--gray-500); font-family: monospace;">GPS: -12.541298, -55.720894</span>
+          <a href="#" class="flex align-center gap-1" style="font-weight: 600; color: var(--primary); text-decoration: none; font-size: 12px;">
+            📍 Abrir no Maps
+          </a>
+        </div>
+
+        <div class="mobile-card-actions-col">
+          <div class="mobile-card-actions-row">
+            <a href="#" class="action-btn action-btn-whatsapp">WhatsApp</a>
+            <button class="action-btn action-btn-primary">Nova Visita</button>
+          </div>
+          <div class="mobile-card-actions-row">
+            <button class="action-btn" style="color: var(--primary); border-color: var(--primary);">Converter</button>
+            <div class="flex gap-2" style="margin-left: auto;">
+              <button class="action-btn" style="width: 44px; height: 40px;">✏️</button>
+              <button class="action-btn" style="width: 44px; height: 40px; color: #ef4444; border-color: #ef4444;">🗑️</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ======================= TAB 3: CLIENTES CARTEIRA REPLICA ======================= -->
+    <div id="pane-customers" class="view-pane">
+      <div class="flex justify-between align-center" style="margin-bottom: 20px;">
+        <h2 style="font-size: 20px;">Carteira de Clientes</h2>
+        <button class="btn btn-primary" style="padding: 8px 14px; font-size: 13px; display: inline-flex; gap: 4px;">
+          <span>+ Novo Cliente</span>
+        </button>
+      </div>
+
+      <div class="mobile-card">
+        <div class="mobile-card-header">
+          <div>
+            <h3 class="mobile-card-title">demo-Valdir Ferreira (Grupo Ferreira Agro)</h3>
+            <div class="mobile-card-subtitle">
+              <span>📍 Sorriso - MT</span>
+            </div>
+          </div>
+          <span class="badge badge-won">Ativo</span>
+        </div>
+
+        <div style="font-size: 13px; color: var(--gray-600); margin-bottom: 8px; border-bottom: 1px solid var(--gray-100); padding-bottom: 10px;">
+          <strong>Fazenda/Grupo:</strong> Grupo Ferreira Agro
+        </div>
+
+        <div style="font-size: 13.5px; color: var(--gray-700); margin-top: 10px;">
+          <div style="margin-bottom: 4px;">🚜 <strong>Máquina:</strong> John Deere M4040</div>
+          <div style="margin-bottom: 4px;">🌾 <strong>Propriedade:</strong> demo-Fazenda Sede Sorriso (850 ha)</div>
+          <div style="color: var(--primary-dark); font-weight: 600;">⚡ <strong>Kit Eletrostático:</strong> SP-KIT-DEMO-0051 (Instalado)</div>
+          <div style="color: var(--gray-500); font-size: 12px; margin-top: 2px;">🛡️ Garantia de fábrica ativa até 15/03/2028</div>
+        </div>
+      </div>
+
+      <div class="mobile-card">
+        <div class="mobile-card-header">
+          <div>
+            <h3 class="mobile-card-title">demo-Beatriz Mello (Fazenda Vista Alegre)</h3>
+            <div class="mobile-card-subtitle">
+              <span>📍 Barretos - SP</span>
+            </div>
+          </div>
+          <span class="badge badge-won">Ativo</span>
+        </div>
+
+        <div style="font-size: 13px; color: var(--gray-600); margin-bottom: 8px; border-bottom: 1px solid var(--gray-100); padding-bottom: 10px;">
+          <strong>Fazenda/Grupo:</strong> Fazenda Vista Alegre
+        </div>
+
+        <div style="font-size: 13.5px; color: var(--gray-700); margin-top: 10px;">
+          <div style="margin-bottom: 4px;">🚜 <strong>Máquina:</strong> Jacto Uniport 3030</div>
+          <div style="margin-bottom: 4px;">🌾 <strong>Propriedade:</strong> demo-Fazenda Vista Alegre (320 ha)</div>
+          <div style="color: var(--primary-dark); font-weight: 600;">⚡ <strong>Kit Eletrostático:</strong> SP-KIT-DEMO-0078 (Instalado)</div>
+          <div style="color: var(--gray-500); font-size: 12px; margin-top: 2px;">🛡️ Garantia de fábrica ativa até 10/04/2028</div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ======================= TAB 4: MEUS GANHOS FINANCEIRO REPLICA ======================= -->
+    <div id="pane-finance" class="view-pane">
+      <div class="pitch-badge">
+        <span>💰 RENTABILIDADE E ROI DO APP</span>
+      </div>
+      <h2 style="font-size: 20px; margin-bottom: 6px; color: var(--primary-dark);">Simulação e Retorno sobre Investimento</h2>
+      <p style="font-size: 14px; color: var(--gray-500); margin-bottom: 20px;">Estudo prático de redução de despesas de viagem e comissões.</p>
+
+      <div class="card">
+        <h3 style="font-size: 15px; margin-bottom: 12px; border-bottom: 1px solid var(--gray-100); padding-bottom: 6px;">Cálculo do Impacto do CRM no EBITDA</h3>
+        
+        <div class="chart-bar-wrapper" style="margin-bottom: 12px;">
+          <div class="chart-label">
+            <span>Redução em Despesas de Viagem (GPS)</span>
+            <strong>-45%</strong>
+          </div>
+          <div class="chart-bar-container">
+            <div class="chart-bar" style="width: 45%;"></div>
+          </div>
+        </div>
+
+        <div class="chart-bar-wrapper" style="margin-bottom: 12px;">
+          <div class="chart-label">
+            <span>Aceleração no Fechamento de Vendas</span>
+            <strong>+40%</strong>
+          </div>
+          <div class="chart-bar-container">
+            <div class="chart-bar" style="width: 78%; background: linear-gradient(90deg, #10b981 0%, #10B9B9 100%);"></div>
+          </div>
+        </div>
+
+        <div class="chart-bar-wrapper">
+          <div class="chart-label">
+            <span>Retenção e Indicação de Clientes (LTV)</span>
+            <strong>+92%</strong>
+          </div>
+          <div class="chart-bar-container">
+            <div class="chart-bar" style="width: 92%; background: linear-gradient(90deg, #10b981 0%, #6366f1 100%);"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="background-color: var(--primary-light); border-color: rgba(16, 185, 129, 0.25);">
+        <h3 style="font-size: 15px; color: var(--primary-dark); margin-bottom: 8px;">Conclusão Apresentada</h3>
+        <p style="font-size: 13.5px; color: var(--gray-700); line-height: 1.5;">O sistema CRM Spray Precision reduz a fricção entre a equipe comercial de rua e a administração do escritório. Trazendo roteirização, auditoria com fotos, rastreabilidade automática de kits e parcelamentos imediatos diretamente ao banco de dados.</p>
+        <div style="margin-top: 14px; font-weight: 700; color: var(--primary-dark); font-size: 13px;">CRM INTEGRADO &bull; APROVADO PELO TIME</div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- BOTTOM NAVIGATION MENU REPLICA -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="switchPane('pane-dashboard', this)">
+      <!-- Dashboard Icon -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+      <span>Dashboard</span>
+    </button>
+    
+    <button class="nav-item" onclick="switchPane('pane-leads', this)">
+      <!-- Leads Target Icon -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+      <span>Leads</span>
+    </button>
+    
+    <button class="nav-item" onclick="switchPane('pane-customers', this)">
+      <!-- Clientes Users Icon -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span>Clientes</span>
+    </button>
+    
+    <button class="nav-item" onclick="switchPane('pane-finance', this)">
+      <!-- Meus Ganhos / Finance Dollar Icon -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <span>Rentabilidade</span>
+    </button>
+  </nav>
+
+  <script>
+    function switchPane(paneId, btnElement) {
+      // 1. Hide all view panes
+      const panes = document.querySelectorAll('.view-pane');
+      panes.forEach(pane => {
+        pane.classList.remove('active');
+      });
+
+      // 2. Show selected pane
+      const targetPane = document.getElementById(paneId);
+      if (targetPane) {
+        targetPane.classList.add('active');
+      }
+
+      // 3. Deactivate all menu items
+      const menuItems = document.querySelectorAll('.nav-item');
+      menuItems.forEach(item => {
+        item.classList.remove('active');
+      });
+
+      // 4. Activate current menu item
+      btnElement.classList.add('active');
+      
+      // Scroll to top when tab switches
+      window.scrollTo(0, 0);
+    }
+  </script>
+</body>
+</html>

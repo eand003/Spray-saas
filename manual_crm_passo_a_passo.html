@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual do Dia a Dia - CRM Spray Precision</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #10b981;          /* Emerald Green */
+      --primary-hover: #059669;
+      --primary-light: #ecfdf5;
+      --primary-dark: #064e3b;     /* Deep Jungle Forest */
+      
+      --secondary: #6366f1;        /* Tech Indigo */
+      --secondary-light: #eef2ff;
+      
+      --dark: #111827;             /* Dark Gray charcoal */
+      --light: #f9fafb;            /* Soft off-white */
+      --white: #ffffff;
+      
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-500: #6b7280;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --radius-xl: 30px;
+      
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+      --shadow-lg: 0 20px 25px -5px rgba(16, 185, 129, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+      --shadow-premium: 0 25px 50px -12px rgba(6, 78, 59, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at top left, var(--primary-light) 0%, #f3f4f6 60%, #e5e7eb 100%);
+      color: var(--gray-700);
+      line-height: 1.6;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Outfit', sans-serif;
+      color: var(--dark);
+      font-weight: 700;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* Header Styling */
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      animation: fadeInDown 0.8s ease-out;
+    }
+
+    .logo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary-dark);
+      color: var(--white);
+      padding: 8px 16px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+      box-shadow: 0 10px 20px rgba(6, 78, 59, 0.2);
+    }
+
+    .logo-badge svg {
+      color: var(--primary);
+    }
+
+    header h1 {
+      font-size: 36px;
+      color: var(--primary-dark);
+      margin-bottom: 12px;
+      letter-spacing: -0.03em;
+    }
+
+    header p {
+      font-size: 16px;
+      color: var(--gray-600);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Navigation / Tabs */
+    .tabs-nav {
+      display: flex;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.4);
+      padding: 6px;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      margin-bottom: 30px;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    
+    .tabs-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 14px 20px;
+      border: none;
+      background: none;
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--gray-600);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      white-space: nowrap;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .tab-btn svg {
+      width: 18px;
+      height: 18px;
+      opacity: 0.7;
+      transition: transform 0.25s ease;
+    }
+
+    .tab-btn.active {
+      background: var(--primary-dark);
+      color: var(--white);
+      box-shadow: 0 10px 20px rgba(6, 78, 59, 0.15);
+    }
+
+    .tab-btn.active svg {
+      opacity: 1;
+      color: var(--primary);
+      transform: scale(1.1);
+    }
+
+    .tab-btn:hover:not(.active) {
+      background: rgba(16, 185, 129, 0.08);
+      color: var(--primary-dark);
+    }
+
+    /* Content Cards */
+    .content-container {
+      position: relative;
+      min-height: 400px;
+    }
+
+    .step-card {
+      display: none;
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-lg);
+      transform: translateY(15px);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .step-card.active {
+      display: block;
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Step Header */
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 2px solid var(--gray-100);
+      padding-bottom: 24px;
+      margin-bottom: 30px;
+      gap: 20px;
+    }
+
+    .step-title-area h2 {
+      font-size: 24px;
+      color: var(--primary-dark);
+      margin-bottom: 6px;
+    }
+
+    .step-time-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      padding: 6px 14px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* Step Grid Content */
+    .step-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 30px;
+    }
+
+    @media (max-width: 768px) {
+      .step-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .step-card {
+        padding: 24px;
+      }
+      
+      .step-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      
+      header h1 {
+        font-size: 28px;
+      }
+    }
+
+    .step-body h3 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-body h3 span {
+      background: var(--primary-dark);
+      color: var(--white);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .step-body p {
+      font-size: 15px;
+      color: var(--gray-600);
+      margin-bottom: 20px;
+    }
+
+    /* Custom Checked List */
+    .checklist {
+      list-style: none;
+      margin-bottom: 24px;
+    }
+
+    .checklist li {
+      position: relative;
+      padding-left: 28px;
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: var(--gray-700);
+      font-weight: 500;
+    }
+
+    .checklist li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 3px;
+      width: 18px;
+      height: 18px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-size: contain;
+    }
+
+    /* Screen Sandbox / Visual Display */
+    .screen-preview {
+      background: var(--gray-900);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      color: var(--white);
+      box-shadow: var(--shadow-premium);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      border: 4px solid var(--gray-700);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .screen-preview::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+    }
+
+    .preview-header {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--primary);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .preview-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+    }
+
+    .preview-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      border-radius: 50px;
+      text-transform: uppercase;
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--primary);
+    }
+
+    .preview-gps {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      color: var(--secondary-light);
+      font-family: monospace;
+      margin-top: 10px;
+    }
+
+    .preview-btn-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .preview-btn {
+      flex: 1;
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .btn-green { background: var(--primary); color: var(--white); }
+    .btn-blue { background: rgba(59, 130, 246, 0.2); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.4); }
+    .btn-outline { border: 1px solid rgba(255, 255, 255, 0.2); color: var(--gray-300); }
+
+    /* Tips Alert Card */
+    .tip-box {
+      margin-top: 30px;
+      background: var(--secondary-light);
+      border-left: 4px solid var(--secondary);
+      padding: 16px 20px;
+      border-radius: var(--radius-md);
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .tip-box svg {
+      color: var(--secondary);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .tip-box h4 {
+      font-size: 15px;
+      color: var(--dark);
+      margin-bottom: 4px;
+    }
+
+    .tip-box p {
+      font-size: 13.5px;
+      color: var(--gray-600);
+      line-height: 1.5;
+    }
+
+    /* Footer Copyright */
+    footer {
+      text-align: center;
+      margin-top: 60px;
+      font-size: 13px;
+      color: var(--gray-500);
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- HEADER -->
+    <header>
+      <div class="logo-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        <span>CRM SYSTEM WORKFLOW</span>
+      </div>
+      <h1>Rotina e Uso Diário do CRM</h1>
+      <p>Aprenda a guiar suas vendas de campo da prospecção até o faturamento e recebimento de comissões em um fluxo simples e intuitivo.</p>
+    </header>
+
+    <!-- NAVIGATION TABS -->
+    <nav class="tabs-nav">
+      <button class="tab-btn active" onclick="switchStep('step1', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>1. Manhã: Rotas</span>
+      </button>
+      <button class="tab-btn" onclick="switchStep('step2', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span>2. Tarde: Campo</span>
+      </button>
+      <button class="tab-btn" onclick="switchStep('step3', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+        <span>3. Fechamento: Won</span>
+      </button>
+      <button class="tab-btn" onclick="switchStep('step4', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span>4. Faturamento</span>
+      </button>
+    </nav>
+
+    <!-- CONTENT MODULES -->
+    <div class="content-container">
+
+      <!-- STEP 1: MANHÃ -->
+      <div id="step1" class="step-card active">
+        <div class="step-header">
+          <div class="step-title-area">
+            <h2>Fase da Manhã: Planejamento e Roteirização</h2>
+            <p>Organize suas visitas aos produtores rurais sem desperdício de tempo ou combustível.</p>
+          </div>
+          <div class="step-time-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>07:30 - 09:00</span>
+          </div>
+        </div>
+
+        <div class="step-grid">
+          <div class="step-body">
+            <h3><span>1</span>Alinhar Filtros de Prospecção</h3>
+            <p>Abra a aba de <strong>Leads</strong> no celular. Utilize o novo **Dropdown Filter de Status** no topo para selecionar leads no status <code>Novo</code> ou <code>Contato feito</code>. Isso listará instantaneamente os produtores pendentes de agendamento ou visita.</p>
+            
+            <h3><span>2</span>Traçar Rota no Google Maps</h3>
+            <p>Localize o lead no painel. Graças à otimização wrap-safe de georreferenciamento, o card exibe de forma limpa o marcador de GPS da fazenda. Clique no botão azul **"Abrir no Maps"** para abrir o aplicativo de mapas no celular e iniciar a navegação por rota otimizada diretamente até a lavoura do produtor.</p>
+
+            <ul class="checklist">
+              <li>Visualizar tarefas pendentes no Dashboard</li>
+              <li>Filtrar leads por pílula dropdown de CRM</li>
+              <li>Traçar rota GPS com 1 toque sem copiar coordenadas</li>
+            </ul>
+          </div>
+
+          <div class="step-side">
+            <!-- Screen sandbox mock -->
+            <div class="screen-preview">
+              <div class="preview-header">
+                <span>Leads CRM</span>
+                <span style="color: #3b82f6;">Filtro Ativo</span>
+              </div>
+              <div style="font-size: 11px; background: rgba(255,255,255,0.08); padding: 6px 10px; border-radius: 4px; display: flex; justify-content: space-between;">
+                <span>Filtro Status:</span>
+                <strong style="color: var(--primary);">Novo / Em Negociação</strong>
+              </div>
+              <div class="preview-card">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                  <strong style="font-size: 13px;">Marcos da Silva</strong>
+                  <span class="preview-badge">Contato</span>
+                </div>
+                <div style="font-size: 11px; color: var(--gray-300);">📍 Ribeirão Preto - SP • 🌾 Soja</div>
+                <div class="preview-gps">
+                  <span>🛰️ GPS: -21.1789, -47.8067</span>
+                  <span style="color: #6366f1; font-weight: bold;">Roteando →</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="tip-box">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              <div>
+                <h4>Dica de Produtividade</h4>
+                <p>Use o filtro dropdown de status para listar apenas os leads "Sem Fit" ou "Perdidos" uma vez por semana, reavaliando-os para recuperar negociações esquecidas.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: TARDE -->
+      <div id="step2" class="step-card">
+        <div class="step-header">
+          <div class="step-title-area">
+            <h2>Fase da Tarde: Atendimento de Campo e Vistoria</h2>
+            <p>Execute visitas técnicas altamente profissionais anotando todas as métricas do pulverizador.</p>
+          </div>
+          <div class="step-time-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>13:00 - 17:00</span>
+          </div>
+        </div>
+
+        <div class="step-grid">
+          <div class="step-body">
+            <h3><span>1</span>Registrar Visita com Geolocalização</h3>
+            <p>Chegando na fazenda, clique no botão azul **"Nova Visita"** no card do Lead. O formulário de registro de visitas abrirá. Toque no botão de geolocalização **"Capturar Coordenadas no Campo"** para capturar as coordenadas exatas da sede via satélite.</p>
+            
+            <h3><span>2</span>Mapear Dores e Equipamentos</h3>
+            <p>Avalie as pontas de pulverização, o monitor e anote a cultura principal. No campo de observações, registre as queixas do produtor (ex: deriva alta, cobertura foliar ruim na cana, gasto excessivo de água).</p>
+
+            <h3><span>3</span>Anexar Fotos Reais</h3>
+            <p>Tire fotos dos bicos de pulverização atuais ou do pulverizador no pátio e anexe-as direto no formulário. A imagem ficará salva de forma permanente no prontuário técnico do histórico de visitas para futuras consultas ou auditorias.</p>
+
+            <ul class="checklist">
+              <li>Mapear pontas de bicos, modelo do pulverizador e ano</li>
+              <li>Capturar localização precisa com 1 toque</li>
+              <li>Fotografar o maquinário no campo como anexo</li>
+            </ul>
+          </div>
+
+          <div class="step-side">
+            <div class="screen-preview">
+              <div class="preview-header">
+                <span>Registrar Visita Técnica</span>
+              </div>
+              <div style="font-size: 11px; color: var(--gray-300);">Alvo: Marcos da Silva (Lead)</div>
+              <div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.1);">
+                <span style="font-size: 11px; font-weight: bold; color: var(--primary);">📍 GEOLOCALIZANDO</span>
+                <div style="font-size: 12px; margin-top: 4px; font-family: monospace;">Lat: -21.178904 / Lng: -47.806782</div>
+                <div style="font-size: 10px; color: #a855f7; margin-top: 4px;">🛰️ Sinal GPS Forte (Acurácia: 3 metros)</div>
+              </div>
+              <div style="font-size: 11px; color: var(--gray-300);">Mapeamento: "John Deere M4040, Bicos TeeJet AIXR"</div>
+              <div style="display: flex; gap: 8px; font-size: 11px; background: rgba(16, 185, 129, 0.15); padding: 8px; border-radius: 4px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                <span>📸 Foto anexada com sucesso.</span>
+              </div>
+            </div>
+            
+            <div class="tip-box">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              <div>
+                <h4>Importante</h4>
+                <p>Mesmo que o sinal de internet da operadora falte no meio da fazenda, o GPS do celular continuará funcionando. O sistema permite digitar as coordenadas manualmente se necessário.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: FECHAMENTO -->
+      <div id="step3" class="step-card">
+        <div class="step-header">
+          <div class="step-title-area">
+            <h2>Fase de Fechamento: Won e Cadastro Oficial</h2>
+            <p>Converta o lead em cliente e registre os dados de máquinas em poucos toques.</p>
+          </div>
+          <div class="step-time-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>17:00 - 18:30</span>
+          </div>
+        </div>
+
+        <div class="step-grid">
+          <div class="step-body">
+            <h3><span>1</span>Converter Lead (Aceleração do CRM)</h3>
+            <p>Negócio fechado! Encontre o lead no painel e clique no botão **"Converter"**. O sistema irá transferir as informações do CRM e criar de forma totalmente automatizada o **Cadastro de Cliente** e a **Fazenda Principal**.</p>
+            
+            <h3><span>2</span>Registrar Pulverizador Oficial</h3>
+            <p>Navegue até a aba **Clientes**, abra o cadastro do cliente recém-criado, clique na sub-aba **"Fazendas"** para checar os dados e vá em **"Pulverizadores"** para registrar a máquina oficial (marca, modelo, bicos atuais, pressão e largura da barra).</p>
+
+            <h3><span>3</span>Ativar Kit de Pulverização</h3>
+            <p>Na sub-aba **"Kits Spray"**, registre a venda e ativação da tecnologia. Insira o número do Kit (ex: <code>SP-KIT-V2-0051</code>), a versão dos bicos instalados e as notas técnicas de calibração. Isso ativará o cronômetro de garantia do cliente automaticamente!</p>
+
+            <ul class="checklist">
+              <li>Converter Leads em Clientes Ativos com 1 clique</li>
+              <li>Preencher inventário oficial de pulverizadores</li>
+              <li>Ativar a garantia no número de série do Kit Spray</li>
+            </ul>
+          </div>
+
+          <div class="step-side">
+            <div class="screen-preview">
+              <div class="preview-header">
+                <span>Conversão de Pipeline</span>
+                <span style="color: var(--primary);">Sucesso 🎉</span>
+              </div>
+              <div style="font-size: 11px; text-align: center; color: var(--gray-300); margin: 8px 0;">
+                Lead <strong>Marcos da Silva</strong> convertido em Cliente!
+              </div>
+              <div class="preview-card" style="border-left: 3px solid var(--primary);">
+                <div style="font-size: 12px; font-weight: bold;">demo-Valdir Ferreira</div>
+                <div style="font-size: 11px; color: var(--primary); margin-top: 4px;">🚜 John Deere M4040 • ⚡ Kit Eletrostático V2</div>
+                <div style="font-size: 10px; color: var(--gray-300); font-family: monospace; margin-top: 4px;">Nº de Série: SP-KIT-V2-0051</div>
+                <div style="font-size: 10px; color: #eab308; margin-top: 2px;">🛡️ Garantia Ativa até 15/03/2028</div>
+              </div>
+            </div>
+            
+            <div class="tip-box">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              <div>
+                <h4>Dica Técnica</h4>
+                <p>Registre sempre o número de série exato do Painel de Controle Eletrostático na aba de Kits. Esse registro é o que a fábrica utiliza em caso de suporte técnico.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 4: FATURAMENTO -->
+      <div id="step4" class="step-card">
+        <div class="step-header">
+          <div class="step-title-area">
+            <h2>Simulação de Vendas e Controle de Comissões</h2>
+            <p>Utilize a calculadora integrada para planejar faturamento e comissões da safra.</p>
+          </div>
+          <div class="step-time-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>Escritório / Pós-Venda</span>
+          </div>
+        </div>
+
+        <div class="step-grid">
+          <div class="step-body">
+            <h3><span>1</span>Simular Rentabilidade da Venda</h3>
+            <p>Vá até a aba **Financeiro / Meus Ganhos**. No **Simulador de Vendas**, insira a quantidade de bicos do pulverizador (ex: 72 bicos) e defina o valor praticado por bico. O simulador calculará no ato o custo, faturamento bruto e faturamento líquido após descontos.</p>
+            
+            <h3><span>2</span>Salvar Contas a Receber</h3>
+            <p>Insira as condições de pagamento (ex: Entrada + 2x) e o método (Pix/Boleto). Salve a venda. O sistema irá gerar de forma totalmente automatizada o contas a receber parcelado, ajudando a administração a faturar as guias.</p>
+
+            <h3><span>3</span>Visualizar Próximas Comissões</h3>
+            <p>Uma vez salva a venda, o sistema calcula sua comissão projetada (baseada nas parcelas). O Dashboard exibirá nos gráficos o seu faturamento do mês e as comissões pendentes e recebidas de forma extremamente visual e limpa!</p>
+
+            <ul class="checklist">
+              <li>Simular lucros e faturamento em tempo real</li>
+              <li>Gerar parcelamento financeiro de entrada e parcelas</li>
+              <li>Acompanhar comissões futuras integradas ao Dashboard</li>
+            </ul>
+          </div>
+
+          <div class="step-side">
+            <div class="screen-preview">
+              <div class="preview-header">
+                <span>Simulador Financeiro</span>
+                <span style="color: #eab308;">Rentável 💰</span>
+              </div>
+              <div class="preview-card">
+                <div style="font-size: 11px; color: var(--gray-300);">Equipamento: 72 Bicos Isoladores (36m)</div>
+                <div style="font-size: 13px; font-weight: bold; margin-top: 4px; display: flex; justify-content: space-between;">
+                  <span>Faturamento Bruto:</span>
+                  <span style="color: var(--primary);">R$ 108.000,00</span>
+                </div>
+                <div style="font-size: 11px; color: var(--gray-300); display: flex; justify-content: space-between; margin-top: 2px;">
+                  <span>Custo do Kit:</span>
+                  <span>R$ 79.200,00</span>
+                </div>
+                <div style="font-size: 12px; font-weight: bold; color: #3b82f6; display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 4px; margin-top: 4px;">
+                  <span>Sua Comissão (10%):</span>
+                  <span>R$ 10.800,00</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="tip-box">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              <div>
+                <h4>Controle Financeiro</h4>
+                <p>Todas as parcelas do Contas a Receber geram um link direto no fluxo de caixa da empresa, garantindo que o faturamento de peças de reposição e novos kits estejam sempre sob controle.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+      <p>&copy; 2026 Spray Precision - Todos os direitos reservados. Sistema CRM de Campo V2.</p>
+    </footer>
+
+  </div>
+
+  <script>
+    function switchStep(stepId, btnElement) {
+      // 1. Remove active class from all step cards
+      const cards = document.querySelectorAll('.step-card');
+      cards.forEach(card => {
+        card.classList.remove('active');
+      });
+
+      // 2. Add active class to selected step card
+      const targetCard = document.getElementById(stepId);
+      if (targetCard) {
+        targetCard.classList.add('active');
+      }
+
+      // 3. Remove active class from all tab buttons
+      const buttons = document.querySelectorAll('.tab-btn');
+      buttons.forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      // 4. Add active class to clicked button
+      btnElement.classList.add('active');
+    }
+  </script>
+</body>
+</html>
