@@ -563,16 +563,20 @@ button {
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 10px;
+  gap: 12px;
+}
+
+.mobile-card-header > div:first-child {
+  flex: 1;
+  min-width: 0;
 }
 
 .mobile-card-title {
   font-size: 16px;
   font-weight: 700;
   color: var(--gray-900);
-  max-width: 70%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .mobile-card-subtitle {
@@ -896,4 +900,31 @@ button {
     max-width: 650px !important;
   }
 }
+
+/* =========================================================================
+   SCROLLBAR & TWO-ROW ACTION BUTTONS UTILITIES FOR LEADS MOBILE
+   ========================================================================= */
+.scroll-hide {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+}
+.scroll-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+.mobile-card-actions-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+  border-top: 1px solid var(--gray-100);
+  padding-top: 12px;
+}
+
+.mobile-card-actions-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
 

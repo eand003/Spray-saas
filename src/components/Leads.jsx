@@ -326,7 +326,7 @@ const Leads = ({ user, activeQuickAction, onClearQuickAction, setCurrentTab, set
           />
         </div>
         
-        <div className="flex align-center gap-2" style={{ overflowX: 'auto', paddingBottom: '6px' }}>
+        <div className="flex align-center gap-2 scroll-hide" style={{ overflowX: 'auto', paddingBottom: '6px' }}>
           <span style={{ fontSize: '13px', color: 'var(--gray-500)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }}>
             <Filter size={14} /> Filtrar Status:
           </span>
@@ -463,19 +463,20 @@ const Leads = ({ user, activeQuickAction, onClearQuickAction, setCurrentTab, set
               )}
 
               {/* ACTION SHORTCUT BUTTONS */}
-              <div className="mobile-card-actions">
-                <a 
-                  href={`https://wa.me/55${ld.phone}`} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="action-btn action-btn-whatsapp"
-                >
-                  <Phone size={14} />
-                  WhatsApp
-                </a>
-                
-                {ld.status !== 'won' && (
-                  <>
+              <div className="mobile-card-actions-col">
+                {/* ROW 1: WhatsApp and Nova Visita */}
+                <div className="mobile-card-actions-row">
+                  <a 
+                    href={`https://wa.me/55${ld.phone}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="action-btn action-btn-whatsapp"
+                  >
+                    <Phone size={14} />
+                    WhatsApp
+                  </a>
+                  
+                  {ld.status !== 'won' && (
                     <button 
                       onClick={() => handleCreateVisitForLead(ld)} 
                       className="action-btn action-btn-primary"
@@ -483,6 +484,12 @@ const Leads = ({ user, activeQuickAction, onClearQuickAction, setCurrentTab, set
                       <Plus size={14} />
                       Nova Visita
                     </button>
+                  )}
+                </div>
+                
+                {/* ROW 2: Converter, Editar, Excluir */}
+                <div className="mobile-card-actions-row">
+                  {ld.status !== 'won' && (
                     <button 
                       onClick={() => handleConvertLead(ld)} 
                       className="action-btn"
@@ -491,25 +498,30 @@ const Leads = ({ user, activeQuickAction, onClearQuickAction, setCurrentTab, set
                       <CheckCircle2 size={14} />
                       Converter
                     </button>
-                  </>
-                )}
-                
-                <button 
-                  onClick={() => handleOpenEditModal(ld)} 
-                  className="action-btn" 
-                  style={{ flex: '0 0 auto', width: '40px' }}
-                >
-                  <Edit2 size={14} />
-                </button>
-                
-                <button 
-                  onClick={() => handleDeleteLead(ld)} 
-                  className="action-btn" 
-                  style={{ flex: '0 0 auto', width: '40px', color: '#ef4444', borderColor: '#ef4444' }}
-                  title="Excluir Lead"
-                >
-                  <Trash2 size={14} />
-                </button>
+                  )}
+                  
+                  <div className="flex gap-2" style={{ marginLeft: ld.status !== 'won' ? 'auto' : '0', width: ld.status !== 'won' ? 'auto' : '100%', justifyContent: ld.status !== 'won' ? 'flex-end' : 'space-between' }}>
+                    <button 
+                      onClick={() => handleOpenEditModal(ld)} 
+                      className="action-btn" 
+                      style={{ flex: ld.status !== 'won' ? '0 0 auto' : '1', width: ld.status !== 'won' ? '44px' : 'auto', height: '40px', display: 'flex', justifyContent: 'center' }}
+                      title="Editar Lead"
+                    >
+                      <Edit2 size={14} />
+                      {ld.status === 'won' && <span style={{ marginLeft: '4px' }}>Editar</span>}
+                    </button>
+                    
+                    <button 
+                      onClick={() => handleDeleteLead(ld)} 
+                      className="action-btn" 
+                      style={{ flex: ld.status !== 'won' ? '0 0 auto' : '1', width: ld.status !== 'won' ? '44px' : 'auto', height: '40px', color: '#ef4444', borderColor: '#ef4444', display: 'flex', justifyContent: 'center' }}
+                      title="Excluir Lead"
+                    >
+                      <Trash2 size={14} />
+                      {ld.status === 'won' && <span style={{ marginLeft: '4px' }}>Excluir</span>}
+                    </button>
+                  </div>
+                </div>
               </div>
               </div>
             );
