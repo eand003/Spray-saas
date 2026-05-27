@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Phone, MapPin, Sprout, ArrowLeft, Layers, Sliders, CheckSquare, Wrench, Trash2 } from 'lucide-react';
+import { Search, Plus, Phone, MapPin, Sprout, ArrowLeft, Layers, Sliders, CheckSquare, Wrench, Trash2, Edit2 } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { formatDate, OPTIONS } from '../utils/helpers';
 import Modal from './UI/Modal';
@@ -29,6 +29,9 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
   const [isAddFarmOpen, setIsAddFarmOpen] = useState(false);
   const [isAddSprayerOpen, setIsAddSprayerOpen] = useState(false);
   const [isAddKitOpen, setIsAddKitOpen] = useState(false);
+  const [editingFarm, setEditingFarm] = useState(null);
+  const [editingSprayer, setEditingSprayer] = useState(null);
+  const [editingKit, setEditingKit] = useState(null);
   const [loading, setLoading] = useState(false);
 
   // Forms payloads
@@ -175,9 +178,22 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
     }
   };
 
-  // ADD FARM
+  // ADD & EDIT FARM
   const handleOpenAddFarm = () => {
+    setEditingFarm(null);
     setFarmForm({ name: '', city: selectedCustomer.city, state: selectedCustomer.state, area_hectares: '', notes: '' });
+    setIsAddFarmOpen(true);
+  };
+
+  const handleOpenEditFarm = (farm) => {
+    setEditingFarm(farm);
+    setFarmForm({
+      name: farm.name,
+      city: farm.city || selectedCustomer.city,
+      state: farm.state || selectedCustomer.state,
+      area_hectares: farm.area_hectares || '',
+      notes: farm.notes || ''
+    });
     setIsAddFarmOpen(true);
   };
 
@@ -187,15 +203,24 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
     try {
       setLoading(true);
       const payload = {
-        customer_id: selectedCustomer.id,
         name: farmForm.name,
         city: farmForm.city || selectedCustomer.city,
         state: farmForm.state || selectedCustomer.state,
         area_hectares: farmForm.area_hectares ? parseFloat(farmForm.area_hectares) : null,
         notes: farmForm.notes
       };
-      const { error } = await supabase.from('farms').insert(payload);
-      if (error) throw error;
+
+      if (editingFarm) {
+        const { error } = await supabase.from('farms').update(payload).eq('id', editingFarm.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('farms').insert({
+          customer_id: selectedCustomer.id,
+          ...payload
+        });
+        if (error) throw error;
+      }
+
       setIsAddFarmOpen(false);
       fetchCustomerRelations(selectedCustomer.id);
       fetchCustomers(); // Refresh all summaries in background card cache
@@ -206,24 +231,59 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
     }
   };
 
-  // ADD SPRAYER
+  const handleDeleteFarm = async (farmId, farmName) => {
+    const confirmDelete = window.confirm(`Tem certeza de que deseja excluir a fazenda "${farmName}"?`);
+    if (!confirmDelete) return;
+    try {
+      setLoading(true);
+      const { error } = await supabase.from('farms').delete().eq('id', farmId);
+      if (error) throw error;
+      fetchCustomerRelations(selectedCustomer.id);
+      fetchCustomers();
+    } catch (err) {
+      alert('Erro ao excluir fazenda: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ADD & EDIT SPRAYER
   const handleOpenAddSprayer = () => {
+    setEditingSprayer(null);
     setSprayerForm({ brand: 'Jacto', model: '', year: '', serial_number: '', boom_width_m: '', nozzle_count: '', nozzle_spacing_cm: '', controller_monitor: '', current_nozzle_model: '', flow_rate_l_ha: '', working_speed_km_h: '', kit_status: 'no_kit', notes: '', farm_id: farms[0]?.id || '' });
+    setIsAddSprayerOpen(true);
+  };
+
+  const handleOpenEditSprayer = (sprayer) => {
+    setEditingSprayer(sprayer);
+    setSprayerForm({
+      brand: sprayer.brand,
+      model: sprayer.model,
+      year: sprayer.year || '',
+      serial_number: sprayer.serial_number || '',
+      boom_width_m: sprayer.boom_width_m || '',
+      nozzle_count: sprayer.nozzle_count || '',
+      nozzle_spacing_cm: sprayer.nozzle_spacing_cm || '',
+      controller_monitor: sprayer.controller_monitor || '',
+      current_nozzle_model: sprayer.current_nozzle_model || '',
+      flow_rate_l_ha: sprayer.flow_rate_l_ha || '',
+      working_speed_km_h: sprayer.working_speed_km_h || '',
+      kit_status: sprayer.kit_status || 'no_kit',
+      notes: sprayer.notes || '',
+      farm_id: selectedCustomer.id // Bypass DB schema constraint
+    });
     setIsAddSprayerOpen(true);
   };
 
   const handleCreateSprayer = async (e) => {
     e.preventDefault();
-    if (!sprayerForm.model || !sprayerForm.farm_id) {
-      alert('Modelo e Fazenda vinculada são obrigatórios.');
+    if (!sprayerForm.model) {
+      alert('Modelo é obrigatório.');
       return;
     }
     try {
       setLoading(true);
       const payload = {
-        customer_id: selectedCustomer.id,
-        // Bypass database schema bug: sp_machines_farm_id_fkey points to sp_customers(id) instead of sp_farms(id)
-        farm_id: selectedCustomer.id, 
         brand: sprayerForm.brand,
         model: sprayerForm.model,
         year: sprayerForm.year ? parseInt(sprayerForm.year) : null,
@@ -238,8 +298,19 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
         kit_status: sprayerForm.kit_status,
         notes: sprayerForm.notes
       };
-      const { error } = await supabase.from('sprayers').insert(payload);
-      if (error) throw error;
+
+      if (editingSprayer) {
+        const { error } = await supabase.from('sprayers').update(payload).eq('id', editingSprayer.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('sprayers').insert({
+          customer_id: selectedCustomer.id,
+          farm_id: selectedCustomer.id, // Bypass DB fkey constraint
+          ...payload
+        });
+        if (error) throw error;
+      }
+
       setIsAddSprayerOpen(false);
       fetchCustomerRelations(selectedCustomer.id);
       fetchCustomers(); // Refresh all summaries in background card cache
@@ -250,9 +321,44 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
     }
   };
 
-  // ADD KIT
+  const handleDeleteSprayer = async (sprayerId, sprayerName) => {
+    const confirmDelete = window.confirm(`Tem certeza de que deseja excluir a máquina "${sprayerName}"?`);
+    if (!confirmDelete) return;
+    try {
+      setLoading(true);
+      const { error } = await supabase.from('sprayers').delete().eq('id', sprayerId);
+      if (error) throw error;
+      fetchCustomerRelations(selectedCustomer.id);
+      fetchCustomers();
+    } catch (err) {
+      alert('Erro ao excluir máquina: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ADD & EDIT KIT
   const handleOpenAddKit = () => {
+    setEditingKit(null);
     setKitForm({ kit_number: '', sprayer_id: sprayers[0]?.id || '', version: 'Bico Eletrostático Localizado V2', panel_serial_number: '', installed_points_count: sprayers[0]?.nozzle_count || '', sale_date: '', installation_date: '', warranty_until: '', status: 'installed', technical_notes: '', farm_id: farms[0]?.id || '' });
+    setIsAddKitOpen(true);
+  };
+
+  const handleOpenEditKit = (kit) => {
+    setEditingKit(kit);
+    setKitForm({
+      kit_number: kit.kit_number,
+      sprayer_id: kit.sprayer_id,
+      version: kit.version || 'Bico Eletrostático Localizado V2',
+      panel_serial_number: kit.panel_serial_number || '',
+      installed_points_count: kit.installed_points_count || '',
+      sale_date: kit.sale_date || '',
+      installation_date: kit.installation_date || '',
+      warranty_until: kit.warranty_until || '',
+      status: kit.status || 'installed',
+      technical_notes: kit.technical_notes || '',
+      farm_id: selectedCustomer.id // Bypass DB fkey constraint
+    });
     setIsAddKitOpen(true);
   };
 
@@ -266,9 +372,6 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
       setLoading(true);
       
       const payload = {
-        customer_id: selectedCustomer.id,
-        // Bypass database schema bug: sp_kits_farm_id_fkey points to sp_customers(id) instead of sp_farms(id)
-        farm_id: selectedCustomer.id, 
         sprayer_id: kitForm.sprayer_id,
         kit_number: kitForm.kit_number,
         version: kitForm.version,
@@ -278,21 +381,46 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
         installation_date: kitForm.installation_date || null,
         warranty_until: kitForm.warranty_until || null,
         status: kitForm.status,
-        seller_id: user.id,
         technical_notes: kitForm.technical_notes
       };
 
-      const { error: kitErr } = await supabase.from('kits').insert(payload);
-      if (kitErr) throw kitErr;
+      if (editingKit) {
+        const { error: kitErr } = await supabase.from('kits').update(payload).eq('id', editingKit.id);
+        if (kitErr) throw kitErr;
+      } else {
+        const { error: kitErr } = await supabase.from('kits').insert({
+          customer_id: selectedCustomer.id,
+          farm_id: selectedCustomer.id, // Bypass DB fkey constraint
+          seller_id: user.id,
+          ...payload
+        });
+        if (kitErr) throw kitErr;
 
-      // Update sprayer status to 'installed'
-      await supabase.from('sprayers').update({ kit_status: 'installed' }).eq('id', kitForm.sprayer_id);
+        // Update sprayer status to 'installed'
+        await supabase.from('sprayers').update({ kit_status: 'installed' }).eq('id', kitForm.sprayer_id);
+      }
 
       setIsAddKitOpen(false);
       fetchCustomerRelations(selectedCustomer.id);
       fetchCustomers(); // Refresh all summaries in background card cache
     } catch (err) {
       alert('Erro ao salvar Kit: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteKit = async (kitId, kitNumber) => {
+    const confirmDelete = window.confirm(`Tem certeza de que deseja excluir o Kit "${kitNumber}"?`);
+    if (!confirmDelete) return;
+    try {
+      setLoading(true);
+      const { error } = await supabase.from('kits').delete().eq('id', kitId);
+      if (error) throw error;
+      fetchCustomerRelations(selectedCustomer.id);
+      fetchCustomers();
+    } catch (err) {
+      alert('Erro ao excluir kit: ' + err.message);
     } finally {
       setLoading(false);
     }
@@ -593,48 +721,68 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
 
                 {/* 2. ESTRUTURA OPERACIONAL (FAZENDAS & MÁQUINAS) */}
                 <div className="card">
-                  <h3 style={{ fontSize: '15px', marginBottom: '12px', borderBottom: '1px solid var(--gray-100)', paddingBottom: '8px', color: 'var(--gray-900)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span>🌾</span> Propriedades e Lavouras ({farms.length})
-                  </h3>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', borderBottom: '1px solid var(--gray-100)', paddingBottom: '8px' }}>
+                    <h3 style={{ fontSize: '15px', color: 'var(--gray-900)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span>🌾</span> Propriedades e Lavouras ({farms.length})
+                    </h3>
+                    <button onClick={() => setActiveTab('farms')} style={{ fontSize: '12px', color: 'var(--primary)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: '600', padding: '4px 8px', borderRadius: '6px', backgroundColor: 'var(--primary-light)' }}>
+                      Gerenciar →
+                    </button>
+                  </div>
                   {farms.length === 0 ? (
                     <p style={{ fontSize: '13px', color: 'var(--gray-500)', fontStyle: 'italic' }}>Nenhuma fazenda cadastrada.</p>
                   ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       {farms.map((f, idx) => (
-                        <div key={f.id} style={{ fontSize: '13px', padding: '8px', backgroundColor: 'var(--gray-50)', borderRadius: '6px', borderLeft: '3px solid var(--gray-300)' }}>
-                          <div style={{ fontWeight: '700', color: 'var(--gray-800)' }}>
-                            {idx + 1}. {f.name} {f.area_hectares ? `(${f.area_hectares} ha)` : ''}
+                        <div key={f.id} style={{ fontSize: '13px', padding: '8px 10px', backgroundColor: 'var(--gray-50)', borderRadius: '6px', borderLeft: '3px solid var(--gray-300)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                          <div style={{ minWidth: 0 }}>
+                            <div style={{ fontWeight: '700', color: 'var(--gray-800)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {idx + 1}. {f.name} {f.area_hectares ? `(${f.area_hectares} ha)` : ''}
+                            </div>
+                            <div style={{ color: 'var(--gray-500)', fontSize: '12px', marginTop: '2px' }}>
+                              📍 {f.city} - {f.state}
+                            </div>
                           </div>
-                          <div style={{ color: 'var(--gray-500)', fontSize: '12px', marginTop: '2px' }}>
-                            📍 {f.city} - {f.state} {f.main_crops && f.main_crops.length > 0 ? `• Culturas: ${f.main_crops.join(', ')}` : ''}
-                          </div>
+                          <button onClick={() => handleOpenEditFarm(f)} style={{ flexShrink: 0, width: '30px', height: '30px', borderRadius: '50%', backgroundColor: 'var(--white)', border: '1px solid var(--gray-200)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--gray-500)' }} title="Editar fazenda">
+                            <Edit2 size={13} />
+                          </button>
                         </div>
                       ))}
                     </div>
                   )}
 
-                  <h3 style={{ fontSize: '15px', marginTop: '20px', marginBottom: '12px', borderBottom: '1px solid var(--gray-100)', paddingBottom: '8px', color: 'var(--gray-900)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span>🚜</span> Frota de Pulverizadores ({sprayers.length})
-                  </h3>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', marginBottom: '12px', borderBottom: '1px solid var(--gray-100)', paddingBottom: '8px' }}>
+                    <h3 style={{ fontSize: '15px', color: 'var(--gray-900)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span>🚜</span> Frota de Pulverizadores ({sprayers.length})
+                    </h3>
+                    <button onClick={() => setActiveTab('sprayers')} style={{ fontSize: '12px', color: 'var(--primary)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: '600', padding: '4px 8px', borderRadius: '6px', backgroundColor: 'var(--primary-light)' }}>
+                      Gerenciar →
+                    </button>
+                  </div>
                   {sprayers.length === 0 ? (
                     <p style={{ fontSize: '13px', color: 'var(--gray-500)', fontStyle: 'italic' }}>Nenhum pulverizador cadastrado.</p>
                   ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       {sprayers.map((s, idx) => {
                         const farm = farms.find(f => f.id === s.farm_id);
                         return (
-                          <div key={s.id} style={{ fontSize: '13px', padding: '8px', backgroundColor: 'var(--gray-50)', borderRadius: '6px', borderLeft: s.kit_status === 'installed' ? '3px solid var(--primary)' : '3px solid var(--gray-300)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div>
-                              <div style={{ fontWeight: '700', color: 'var(--gray-800)' }}>
+                          <div key={s.id} style={{ fontSize: '13px', padding: '8px 10px', backgroundColor: 'var(--gray-50)', borderRadius: '6px', borderLeft: s.kit_status === 'installed' ? '3px solid var(--primary)' : '3px solid var(--gray-300)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                            <div style={{ minWidth: 0, flex: 1 }}>
+                              <div style={{ fontWeight: '700', color: 'var(--gray-800)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                 {idx + 1}. {s.brand} {s.model} {s.year ? `(${s.year})` : ''}
                               </div>
                               <div style={{ color: 'var(--gray-500)', fontSize: '12px', marginTop: '2px' }}>
-                                Fazenda: {farm ? farm.name : 'Sede'} • Barra: {s.boom_width_m || '--'}m ({s.nozzle_count || '--'} bicos)
+                                Barra: {s.boom_width_m || '--'}m • {s.nozzle_count || '--'} bicos
                               </div>
                             </div>
-                            <span className={`badge ${s.kit_status === 'installed' ? 'badge-won' : 'badge-no_fit'}`} style={{ fontSize: '10px', padding: '2px 6px' }}>
-                              {s.kit_status === 'installed' ? 'Com Kit ⚡' : 'Sem Kit'}
-                            </span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                              <span className={`badge ${s.kit_status === 'installed' ? 'badge-won' : 'badge-no_fit'}`} style={{ fontSize: '10px', padding: '2px 6px' }}>
+                                {s.kit_status === 'installed' ? 'Kit ⚡' : 'Sem Kit'}
+                              </span>
+                              <button onClick={() => handleOpenEditSprayer(s)} style={{ width: '30px', height: '30px', borderRadius: '50%', backgroundColor: 'var(--white)', border: '1px solid var(--gray-200)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--gray-500)' }} title="Editar máquina">
+                                <Edit2 size={13} />
+                              </button>
+                            </div>
                           </div>
                         );
                       })}
@@ -645,27 +793,37 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
                 {/* 3. TECNOLOGIA SPRAY PRECISION & GARANTIAS */}
                 {kits.length > 0 && (
                   <div className="card" style={{ borderLeft: '4px solid var(--primary)', backgroundColor: 'var(--primary-light)' }}>
-                    <h3 style={{ fontSize: '15px', marginBottom: '12px', borderBottom: '1px solid rgba(16, 185, 129, 0.15)', paddingBottom: '8px', color: 'var(--primary-dark)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span>⚡</span> Tecnologia Spray Precision
-                    </h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', borderBottom: '1px solid rgba(16, 185, 129, 0.15)', paddingBottom: '8px' }}>
+                      <h3 style={{ fontSize: '15px', color: 'var(--primary-dark)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span>⚡</span> Tecnologia Spray Precision ({kits.length})
+                      </h3>
+                      <button onClick={() => setActiveTab('kits')} style={{ fontSize: '12px', color: 'var(--primary-dark)', background: 'rgba(255,255,255,0.7)', border: '1px solid rgba(16,185,129,0.2)', cursor: 'pointer', fontWeight: '600', padding: '4px 8px', borderRadius: '6px' }}>
+                        Gerenciar →
+                      </button>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                       {kits.map((k, idx) => {
                         const sprayer = sprayers.find(s => s.id === k.sprayer_id);
                         return (
-                          <div key={k.id} style={{ fontSize: '13px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <strong style={{ color: 'var(--primary-dark)' }}>Kit {kits.length > 1 ? `${idx + 1}:` : ''} {k.kit_number}</strong>
-                              <span className="badge badge-won" style={{ fontSize: '10px', padding: '2px 6px' }}>Ativo</span>
+                          <div key={k.id} style={{ fontSize: '13px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                                <strong style={{ color: 'var(--primary-dark)' }}>Kit {kits.length > 1 ? `${idx + 1}:` : ''} {k.kit_number}</strong>
+                                <span className="badge badge-won" style={{ fontSize: '10px', padding: '2px 6px' }}>Ativo</span>
+                              </div>
+                              <div style={{ color: 'var(--gray-700)', fontSize: '12.5px', marginTop: '4px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                <div><strong>Equipamento:</strong> {sprayer ? `${sprayer.brand} ${sprayer.model}` : 'Pulverizador'}</div>
+                                <div><strong>Versão:</strong> {k.version}</div>
+                                {k.warranty_until && (
+                                  <div style={{ color: '#d97706', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px' }}>
+                                    <span>🛡️</span> Garantia válida até {formatDate(k.warranty_until)}
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                            <div style={{ color: 'var(--gray-700)', fontSize: '12.5px', marginTop: '4px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                              <div><strong>Equipamento:</strong> {sprayer ? `${sprayer.brand} ${sprayer.model}` : 'Pulverizador'}</div>
-                              <div><strong>Versão:</strong> {k.version}</div>
-                              {k.warranty_until && (
-                                <div style={{ color: '#d97706', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px' }}>
-                                  <span>🛡️</span> Garantia válida até {formatDate(k.warranty_until)}
-                                </div>
-                              )}
-                            </div>
+                            <button onClick={() => handleOpenEditKit(k)} style={{ flexShrink: 0, width: '30px', height: '30px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.8)', border: '1px solid rgba(16,185,129,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--primary-dark)', marginTop: '2px' }} title="Editar kit">
+                              <Edit2 size={13} />
+                            </button>
                           </div>
                         );
                       })}
@@ -739,6 +897,14 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
                           "{f.notes}"
                         </p>
                       )}
+                      <div style={{ display: 'flex', gap: '8px', marginTop: '12px', borderTop: '1px solid var(--gray-100)', paddingTop: '10px' }}>
+                        <button onClick={() => handleOpenEditFarm(f)} className="btn btn-secondary" style={{ flex: 1, padding: '6px', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                          <Edit2 size={12} /> Editar
+                        </button>
+                        <button onClick={() => handleDeleteFarm(f.id, f.name)} className="btn btn-danger" style={{ flex: 1, padding: '6px', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                          <Trash2 size={12} /> Excluir
+                        </button>
+                      </div>
                     </div>
                   ))
                 )}
@@ -793,6 +959,14 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
                             "{s.notes}"
                           </p>
                         )}
+                        <div style={{ display: 'flex', gap: '8px', marginTop: '12px', borderTop: '1px solid var(--gray-200)', paddingTop: '10px' }}>
+                          <button onClick={() => handleOpenEditSprayer(s)} className="btn btn-secondary" style={{ flex: 1, padding: '6px', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                            <Edit2 size={12} /> Editar
+                          </button>
+                          <button onClick={() => handleDeleteSprayer(s.id, `${s.brand} ${s.model}`)} className="btn btn-danger" style={{ flex: 1, padding: '6px', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                            <Trash2 size={12} /> Excluir
+                          </button>
+                        </div>
                       </div>
                     );
                   })
@@ -842,6 +1016,14 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
                             <strong>Notas Técnicas:</strong> {k.technical_notes}
                           </div>
                         )}
+                        <div style={{ display: 'flex', gap: '8px', marginTop: '12px', borderTop: '1px solid rgba(16, 185, 129, 0.15)', paddingTop: '10px' }}>
+                          <button onClick={() => handleOpenEditKit(k)} className="btn btn-secondary" style={{ flex: 1, padding: '6px', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                            <Edit2 size={12} /> Editar
+                          </button>
+                          <button onClick={() => handleDeleteKit(k.id, k.kit_number)} className="btn btn-danger" style={{ flex: 1, padding: '6px', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                            <Trash2 size={12} /> Excluir
+                          </button>
+                        </div>
                       </div>
                     );
                   })
@@ -980,7 +1162,7 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
       </Modal>
 
       {/* B. ADD FARM MODAL */}
-      <Modal isOpen={isAddFarmOpen} onClose={() => setIsAddFarmOpen(false)} title="Adicionar Fazenda">
+      <Modal isOpen={isAddFarmOpen} onClose={() => setIsAddFarmOpen(false)} title={editingFarm ? "Editar Fazenda" : "Adicionar Fazenda"}>
         <form onSubmit={handleCreateFarm}>
           <div className="form-group">
             <label>Nome da Fazenda / Propriedade *</label>
@@ -1029,13 +1211,13 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
             />
           </div>
           <button type="submit" className="btn btn-primary btn-large" disabled={loading}>
-            {loading ? 'Salvando...' : 'Adicionar Fazenda'}
+            {loading ? 'Salvando...' : (editingFarm ? 'Salvar Alterações' : 'Adicionar Fazenda')}
           </button>
         </form>
       </Modal>
 
       {/* C. ADD SPRAYER MACHINERY MODAL */}
-      <Modal isOpen={isAddSprayerOpen} onClose={() => setIsAddSprayerOpen(false)} title="Adicionar Pulverizador">
+      <Modal isOpen={isAddSprayerOpen} onClose={() => setIsAddSprayerOpen(false)} title={editingSprayer ? "Editar Pulverizador" : "Adicionar Pulverizador"}>
         <form onSubmit={handleCreateSprayer}>
           <div className="form-row">
             <div className="form-group">
@@ -1175,13 +1357,13 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
           </div>
 
           <button type="submit" className="btn btn-primary btn-large" disabled={loading}>
-            {loading ? 'Salvando...' : 'Adicionar Pulverizador'}
+            {loading ? 'Salvando...' : (editingSprayer ? 'Salvar Alterações' : 'Adicionar Pulverizador')}
           </button>
         </form>
       </Modal>
 
       {/* D. ADD KIT SPRAY PRECISION MODAL */}
-      <Modal isOpen={isAddKitOpen} onClose={() => setIsAddKitOpen(false)} title="Registrar Instalação de Kit">
+      <Modal isOpen={isAddKitOpen} onClose={() => setIsAddKitOpen(false)} title={editingKit ? "Editar Instalação de Kit" : "Registrar Instalação de Kit"}>
         <form onSubmit={handleCreateKit}>
           <div className="form-group">
             <label>Identificação do Kit (Nº Spray Precision) *</label>
@@ -1273,7 +1455,7 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
           </div>
 
           <button type="submit" className="btn btn-primary btn-large" disabled={loading}>
-            {loading ? 'Salvando...' : 'Registrar Instalação'}
+            {loading ? 'Salvando...' : (editingKit ? 'Salvar Alterações' : 'Registrar Instalação')}
           </button>
         </form>
       </Modal>
