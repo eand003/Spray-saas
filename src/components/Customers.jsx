@@ -19,6 +19,11 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
   const [kits, setKits] = useState([]);
   const [visits, setVisits] = useState([]);
 
+  // Relationship cache for summaries in main customer list cards
+  const [allFarms, setAllFarms] = useState([]);
+  const [allSprayers, setAllSprayers] = useState([]);
+  const [allKits, setAllKits] = useState([]);
+
   // Modal forms states
   const [isAddCustomerOpen, setIsAddCustomerOpen] = useState(false);
   const [isAddFarmOpen, setIsAddFarmOpen] = useState(false);
@@ -68,8 +73,17 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
       const { data, error } = await query.order('name', { ascending: true });
       if (error) throw error;
       setCustomers(data || []);
+
+      // Fetch all customer farms, sprayers, and kits to display on the cards
+      const { data: farmsData } = await supabase.from('farms').select('*');
+      const { data: sprayersData } = await supabase.from('sprayers').select('*');
+      const { data: kitsData } = await supabase.from('kits').select('*');
+      
+      setAllFarms(farmsData || []);
+      setAllSprayers(sprayersData || []);
+      setAllKits(kitsData || []);
     } catch (e) {
-      console.error(e);
+      console.error('Erro ao buscar clientes e relações:', e);
     } finally {
       setLoading(false);
     }
@@ -184,6 +198,7 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
       if (error) throw error;
       setIsAddFarmOpen(false);
       fetchCustomerRelations(selectedCustomer.id);
+      fetchCustomers(); // Refresh all summaries in background card cache
     } catch (err) {
       alert(err.message);
     } finally {
@@ -226,6 +241,7 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
       if (error) throw error;
       setIsAddSprayerOpen(false);
       fetchCustomerRelations(selectedCustomer.id);
+      fetchCustomers(); // Refresh all summaries in background card cache
     } catch (err) {
       alert(err.message);
     } finally {
@@ -276,6 +292,7 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
 
       setIsAddKitOpen(false);
       fetchCustomerRelations(selectedCustomer.id);
+      fetchCustomers(); // Refresh all summaries in background card cache
     } catch (err) {
       alert(err.message);
     } finally {
@@ -321,35 +338,85 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
             </div>
           ) : (
             <div className="mobile-card-list">
-              {filteredCustomers.map((cust) => (
-                <div 
-                  key={cust.id} 
-                  className="mobile-card" 
-                  onClick={() => { setSelectedCustomer(cust); setActiveTab('summary'); }}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <div className="mobile-card-header">
-                    <div>
-                      <h3 className="mobile-card-title">{cust.name}</h3>
-                      <div className="mobile-card-subtitle">
-                        <span>📍 {cust.city} - {cust.state}</span>
+              {filteredCustomers.map((cust) => {
+                const customerSprayers = allSprayers.filter(s => s.customer_id === cust.id);
+                const customerFarms = allFarms.filter(f => f.customer_id === cust.id);
+                const customerKits = allKits.filter(k => k.customer_id === cust.id);
+                const hasKit = customerKits.length > 0;
+
+                return (
+                  <div 
+                    key={cust.id} 
+                    className="mobile-card" 
+                    onClick={() => { setSelectedCustomer(cust); setActiveTab('summary'); }}
+                    style={{ cursor: 'pointer', borderLeft: hasKit ? '4px solid var(--primary)' : '1px solid var(--gray-200)' }}
+                  >
+                    <div className="mobile-card-header">
+                      <div>
+                        <h3 className="mobile-card-title">{cust.name}</h3>
+                        <div className="mobile-card-subtitle">
+                          <span>📍 {cust.city} - {cust.state}</span>
+                        </div>
                       </div>
+                      <span className={`badge ${hasKit ? 'badge-won' : 'badge-no_fit'}`}>
+                        {hasKit ? 'Instalado' : 'Ativo'}
+                      </span>
                     </div>
-                    <span className="badge badge-won">Ativo</span>
-                  </div>
 
-                  {cust.company_name && cust.company_name !== cust.name && (
-                    <div style={{ fontSize: '13px', color: 'var(--gray-600)', marginBottom: '8px' }}>
-                      <strong>Fazenda/Grupo:</strong> {cust.company_name}
+                    {cust.company_name && cust.company_name !== cust.name && (
+                      <div style={{ fontSize: '13px', color: 'var(--gray-600)', marginBottom: '8px' }}>
+                        <strong>Fazenda/Grupo:</strong> {cust.company_name}
+                      </div>
+                    )}
+
+                    {/* Rich visual relationships summaries exactly like the pitch demo card */}
+                    {customerSprayers.length > 0 && (
+                      <div style={{ 
+                        fontSize: '13px', 
+                        color: 'var(--gray-700)', 
+                        marginTop: '8px', 
+                        borderTop: '1px solid var(--gray-100)', 
+                        paddingTop: '8px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '4px'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span style={{ fontSize: '14px' }}>🚜</span> 
+                          <span><strong>Máquina:</strong> {customerSprayers[0].brand} {customerSprayers[0].model}</span>
+                        </div>
+                        
+                        {customerFarms.length > 0 && (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{ fontSize: '14px' }}>🌾</span> 
+                            <span><strong>Propriedade:</strong> {customerFarms[0].name} {customerFarms[0].area_hectares ? `(${customerFarms[0].area_hectares} ha)` : ''}</span>
+                          </div>
+                        )}
+
+                        {hasKit && (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '2px' }}>
+                            <div style={{ color: 'var(--primary-dark)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <span style={{ fontSize: '14px' }}>⚡</span>
+                              <span><strong>Kit Eletrostático:</strong> {customerKits[0].kit_number}</span>
+                            </div>
+                            {customerKits[0].warranty_until && (
+                              <div style={{ color: '#d97706', fontSize: '11.5px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px', marginLeft: '2px' }}>
+                                <span style={{ fontSize: '12px' }}>🛡️</span>
+                                <span>Garantia ativa até {formatDate(customerKits[0].warranty_until)}</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    <div className="flex justify-between align-center" style={{ borderTop: '1px solid var(--gray-100)', paddingTop: '10px', marginTop: '10px', fontSize: '13px' }}>
+                      <span style={{ color: 'var(--gray-500)' }}>Ver Detalhes do Cliente</span>
+                      <ArrowLeft size={16} style={{ transform: 'rotate(180deg)', color: 'var(--primary)' }} />
                     </div>
-                  )}
-
-                  <div className="flex justify-between align-center" style={{ borderTop: '1px solid var(--gray-100)', paddingTop: '10px', marginTop: '10px', fontSize: '13px' }}>
-                    <span style={{ color: 'var(--gray-500)' }}>Ver Detalhes do Cliente</span>
-                    <ArrowLeft size={16} style={{ transform: 'rotate(180deg)', color: 'var(--primary)' }} />
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
