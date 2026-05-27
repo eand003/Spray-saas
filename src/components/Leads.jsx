@@ -437,7 +437,7 @@ const Leads = ({ user, activeQuickAction, onClearQuickAction, setCurrentTab, set
 
               {/* Geo Coordinate links */}
               {cardLat && (
-                <div className="flex justify-between align-center" style={{ 
+                <div className="flex justify-between align-center flex-wrap gap-2" style={{ 
                   marginTop: '4px', 
                   padding: '8px 12px', 
                   backgroundColor: 'var(--gray-50)', 
@@ -446,15 +446,15 @@ const Leads = ({ user, activeQuickAction, onClearQuickAction, setCurrentTab, set
                   border: '1px solid var(--gray-200)',
                   marginBottom: '12px'
                 }}>
-                  <span style={{ color: 'var(--gray-500)', fontFamily: 'monospace' }}>
-                    Coordenadas: {cardLat}, {cardLng}
+                  <span style={{ color: 'var(--gray-500)', fontFamily: 'monospace', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', minWidth: '130px', flex: '1 1 auto' }} title={`GPS: ${cardLat}, ${cardLng}`}>
+                    GPS: {cardLat}, {cardLng}
                   </span>
                   <a 
                     href={`https://www.google.com/maps/dir/?api=1&destination=${cardLat},${cardLng}`} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="flex align-center gap-1"
-                    style={{ fontWeight: 600, color: 'var(--primary)' }}
+                    style={{ fontWeight: 600, color: 'var(--primary)', whiteSpace: 'nowrap', flex: '0 0 auto' }}
                   >
                     <Navigation size={12} />
                     Abrir no Maps

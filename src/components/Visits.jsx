@@ -458,7 +458,7 @@ const Visits = ({ user, preselectedLeadForVisit, onClearPreselectedLead }) => {
 
               {/* Geo Coordinate links */}
               {v.latitude && (
-                <div className="flex justify-between align-center" style={{ 
+                <div className="flex justify-between align-center flex-wrap gap-2" style={{ 
                   marginTop: '12px', 
                   padding: '8px 12px', 
                   backgroundColor: 'var(--gray-50)', 
@@ -466,7 +466,7 @@ const Visits = ({ user, preselectedLeadForVisit, onClearPreselectedLead }) => {
                   fontSize: '12px',
                   border: '1px solid var(--gray-200)'
                 }}>
-                  <span style={{ color: 'var(--gray-500)', fontFamily: 'monospace' }}>
+                  <span style={{ color: 'var(--gray-500)', fontFamily: 'monospace', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', minWidth: '130px', flex: '1 1 auto' }} title={`GPS: ${v.latitude}, ${v.longitude}`}>
                     GPS: {v.latitude}, {v.longitude}
                   </span>
                   <a 
@@ -474,7 +474,7 @@ const Visits = ({ user, preselectedLeadForVisit, onClearPreselectedLead }) => {
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="flex align-center gap-1"
-                    style={{ fontWeight: 600, color: 'var(--primary)' }}
+                    style={{ fontWeight: 600, color: 'var(--primary)', whiteSpace: 'nowrap', flex: '0 0 auto' }}
                   >
                     <Navigation size={12} />
                     Abrir Rota
