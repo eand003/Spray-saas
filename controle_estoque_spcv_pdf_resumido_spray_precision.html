@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Controle de Estoque Consignado - Bicos SPCV Spray Precision</title>
+  <style>
+    :root {
+      --bg:#f4f6f8;
+      --card:#ffffff;
+      --text:#17202a;
+      --muted:#64748b;
+      --line:#d9e2ec;
+      --green:#1f6f43;
+      --green2:#0f5132;
+      --red:#b42318;
+      --blue:#334155;
+      --soft:#eef7f1;
+      --soft2:#f8fafc;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .wrap {
+      max-width: 1180px;
+      margin: auto;
+      padding: 22px;
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--green2);
+      font-size: 25px;
+    }
+
+    .subtitle {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 13px;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--green);
+      color: #fff;
+      font-size: 13px;
+    }
+
+    button.secondary { background: var(--blue); }
+    button.light { background: #e8eef3; color: #1f2937; }
+    button.danger { background: var(--red); }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 8px 24px rgba(15,23,42,.06);
+      margin-bottom: 14px;
+    }
+
+    .card h2 {
+      margin: 0 0 12px;
+      color: var(--green2);
+      font-size: 17px;
+    }
+
+    label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 4px;
+      font-weight: 700;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 9px 10px;
+      font-size: 14px;
+      background: #fff;
+      color: var(--text);
+    }
+
+    textarea {
+      min-height: 64px;
+      resize: vertical;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .full { grid-column: 1 / -1; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 13px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 8px;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      background: var(--soft2);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    td input, td select {
+      padding: 7px 8px;
+      font-size: 13px;
+    }
+
+    .color-pill {
+      display: inline-flex;
+      align-items: center;
+      min-width: 82px;
+      justify-content: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 8px;
+      background: #f8fafc;
+      font-weight: 700;
+      font-size: 12px;
+      color: #334155;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      background: var(--soft);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .metric small {
+      display: block;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+
+    .metric strong {
+      color: var(--green2);
+      font-size: 18px;
+    }
+
+    .row-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .note {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #7c2d12;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+
+    .signatures {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 26px;
+    }
+
+    .sig {
+      border-top: 1px solid #111827;
+      padding-top: 6px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      min-height: 46px;
+    }
+
+    .empty-row {
+      color: var(--muted);
+      font-style: italic;
+      text-align: center;
+      padding: 14px;
+    }
+
+    .print-summary {
+      display: none;
+    }
+
+    @media (max-width: 960px) {
+      .top { flex-direction: column; }
+      .actions { justify-content: flex-start; }
+      .grid, .grid.two, .metrics, .signatures {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      @page {
+        size: A4 landscape;
+        margin: 8mm;
+      }
+
+      body {
+        background: #fff;
+        color: #17202a;
+      }
+
+      .screen-area {
+        display: none !important;
+      }
+
+      .print-summary {
+        display: block !important;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .print-page {
+        width: 100%;
+        min-height: 100%;
+      }
+
+      .p-header {
+        display: grid;
+        grid-template-columns: 1.2fr .8fr;
+        gap: 10px;
+        align-items: start;
+        border-bottom: 3px solid #1f6f43;
+        padding-bottom: 7px;
+        margin-bottom: 7px;
+      }
+
+      .p-title h1 {
+        font-size: 19px;
+        margin: 0;
+        color: #0f5132;
+        letter-spacing: -0.01em;
+      }
+
+      .p-title p {
+        font-size: 10px;
+        margin: 3px 0 0;
+        color: #64748b;
+      }
+
+      .p-meta {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 5px;
+      }
+
+      .p-box {
+        border: 1px solid #d9e2ec;
+        background: #f8fafc;
+        border-radius: 7px;
+        padding: 5px 6px;
+      }
+
+      .p-box small {
+        display: block;
+        color: #64748b;
+        font-size: 7.8px;
+        font-weight: 700;
+        margin-bottom: 1px;
+      }
+
+      .p-box strong {
+        display: block;
+        font-size: 10.5px;
+        color: #17202a;
+      }
+
+      .p-section {
+        border: 1px solid #d9e2ec;
+        border-radius: 9px;
+        padding: 7px;
+        margin-bottom: 6px;
+        break-inside: avoid;
+      }
+
+      .p-section h2 {
+        margin: 0 0 5px;
+        font-size: 12px;
+        color: #0f5132;
+        background: #eef7f1;
+        border-radius: 6px;
+        padding: 4px 6px;
+      }
+
+      .p-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 5px;
+      }
+
+      .p-grid.four {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .p-grid.two {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .p-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 9.2px;
+        margin-top: 4px;
+        border: 1px solid #d9e2ec;
+      }
+
+      .p-table th {
+        background: #eef7f1;
+        color: #334155;
+        padding: 4px 5px;
+        font-size: 8.8px;
+        border-bottom: 1px solid #d9e2ec;
+      }
+
+      .p-table td {
+        padding: 4px 5px;
+        border-bottom: 1px solid #e5eaf0;
+      }
+
+      .p-table tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .p-badge {
+        display: inline-block;
+        border: 1px solid #d9e2ec;
+        background: #f8fafc;
+        border-radius: 999px;
+        padding: 1px 6px;
+        font-weight: 700;
+        font-size: 8.4px;
+      }
+
+      .p-note {
+        font-size: 9.4px;
+        line-height: 1.28;
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+        color: #7c2d12;
+        border-radius: 7px;
+        padding: 5px 7px;
+        margin-top: 5px;
+      }
+
+      .p-declare {
+        font-size: 9.5px;
+        line-height: 1.3;
+        margin: 0 0 14px;
+        color: #334155;
+      }
+
+      .p-signatures {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-top: 18px;
+      }
+
+      .p-sign {
+        border-top: 1px solid #17202a;
+        padding-top: 4px;
+        text-align: center;
+        font-size: 9.5px;
+        color: #334155;
+      }
+
+      .p-footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 6px;
+        font-size: 8.5px;
+        color: #64748b;
+      }
+
+      .muted {
+        color: #64748b;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="screen-area">
+    <div class="wrap">
+      <div class="top">
+        <div>
+          <h1>Controle de Estoque Consignado — Bicos SPCV</h1>
+          <p class="subtitle">Tela de controle operacional. O PDF exportado será um resumo limpo e próprio para assinatura/arquivo.</p>
+        </div>
+        <div class="actions no-print">
+          <button onclick="imprimirResumo()">Exportar PDF resumido</button>
+          <button class="secondary" onclick="salvarLocal()">Salvar</button>
+          <button class="light" onclick="baixarCSV()">Baixar CSV</button>
+          <button class="light" onclick="baixarJSON()">Baixar JSON</button>
+          <button class="danger" onclick="limparTudo()">Limpar</button>
+        </div>
+      </div>
+
+      <section class="card">
+        <h2>1. Dados do controle</h2>
+        <div class="grid">
+          <div>
+            <label>Data</label>
+            <input id="dataControle" type="date">
+          </div>
+          <div>
+            <label>Parceiro</label>
+            <input id="parceiro" placeholder="Nome do parceiro">
+          </div>
+          <div>
+            <label>CPF/CNPJ</label>
+            <input id="documento" placeholder="CPF ou CNPJ">
+          </div>
+          <div>
+            <label>Telefone</label>
+            <input id="telefone" placeholder="WhatsApp">
+          </div>
+          <div>
+            <label>Responsável Spray</label>
+            <input id="responsavel" placeholder="Nome de quem entregou">
+          </div>
+          <div>
+            <label>Preço padrão ao produtor</label>
+            <input id="precoPadrao" type="number" step="0.01" value="45">
+          </div>
+          <div>
+            <label>Comissão padrão</label>
+            <input id="comissaoPadrao" type="number" step="0.01" value="15">
+          </div>
+          <div>
+            <label>Preço mínimo autorizado</label>
+            <input id="precoMinimo" type="number" step="0.01" value="40">
+          </div>
+          <div>
+            <label>Comissão no preço mínimo</label>
+            <input id="comissaoMinima" type="number" step="0.01" value="12">
+          </div>
+          <div>
+            <label>Desconto/Imposto comissão (%)</label>
+            <input id="descontoComissao" type="number" step="0.01" value="0">
+          </div>
+          <div class="full">
+            <label>Observações gerais</label>
+            <textarea id="observacoes" placeholder="Ex.: lote deixado para venda consignada; acerto semanal; comissão bruta, com eventual imposto de nota descontado da comissão."></textarea>
+          </div>
+        </div>
+
+        <div class="note">
+          Regra comercial: venda padrão a R$ 45,00 com comissão de R$ 15,00 por bico.
+          Venda mínima autorizada a R$ 40,00 com comissão de R$ 12,00 por bico.
+          Se houver emissão de nota de comissão, o imposto/desconto pode ser abatido da comissão do parceiro.
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>2. Estoque por modelo</h2>
+        <table id="estoqueTable">
+          <thead>
+            <tr>
+              <th style="width:19%">Modelo</th>
+              <th style="width:10%">Cor</th>
+              <th style="width:9%">Entregue</th>
+              <th style="width:9%">Vendido</th>
+              <th style="width:9%">Devolvido</th>
+              <th style="width:8%">Saldo</th>
+              <th style="width:10%">Preço venda</th>
+              <th style="width:10%">Comissão/un</th>
+              <th style="width:11%">Comissão total</th>
+              <th class="no-print" style="width:8%">Ação</th>
+            </tr>
+          </thead>
+          <tbody id="estoqueBody"></tbody>
+        </table>
+
+        <div class="row-actions no-print">
+          <button onclick="adicionarLinha()">Adicionar linha</button>
+          <button class="light" onclick="inserirTodosModelos()">Inserir todos os modelos SPCV</button>
+          <button class="light" onclick="zerarQuantidades()">Zerar quantidades</button>
+        </div>
+
+        <div class="metrics">
+          <div class="metric">
+            <small>Total entregue</small>
+            <strong id="mEntregue">0</strong>
+          </div>
+          <div class="metric">
+            <small>Total vendido</small>
+            <strong id="mVendido">0</strong>
+          </div>
+          <div class="metric">
+            <small>Total devolvido</small>
+            <strong id="mDevolvido">0</strong>
+          </div>
+          <div class="metric">
+            <small>Saldo em estoque</small>
+            <strong id="mSaldo">0</strong>
+          </div>
+          <div class="metric">
+            <small>Comissão bruta</small>
+            <strong id="mComissao">R$ 0,00</strong>
+          </div>
+        </div>
+
+        <div class="metrics">
+          <div class="metric">
+            <small>Valor vendido</small>
+            <strong id="mValorVendido">R$ 0,00</strong>
+          </div>
+          <div class="metric">
+            <small>Comissão líquida</small>
+            <strong id="mComissaoLiquida">R$ 0,00</strong>
+          </div>
+          <div class="metric">
+            <small>Valor do estoque em saldo</small>
+            <strong id="mValorSaldo">R$ 0,00</strong>
+          </div>
+          <div class="metric">
+            <small>Atualizado em</small>
+            <strong id="mAtualizado" style="font-size:12px;">—</strong>
+          </div>
+          <div class="metric">
+            <small>Status</small>
+            <strong id="mStatus" style="font-size:12px;">OK</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>3. Registro rápido de vendas</h2>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:12%">Data</th>
+              <th style="width:26%">Cliente/produtor</th>
+              <th style="width:18%">Modelo</th>
+              <th style="width:10%">Cor</th>
+              <th style="width:7%">Qtd</th>
+              <th style="width:10%">Preço/un</th>
+              <th style="width:10%">Comissão/un</th>
+              <th style="width:17%">Observação</th>
+              <th class="no-print" style="width:8%">Ação</th>
+            </tr>
+          </thead>
+          <tbody id="vendasBody"></tbody>
+        </table>
+        <div id="semVendas" class="empty-row">Nenhuma venda registrada neste controle.</div>
+        <div class="row-actions no-print">
+          <button onclick="adicionarVenda()">Adicionar venda</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>4. Confirmação simples</h2>
+        <div class="grid two">
+          <div>
+            <label>Nome do parceiro para ciência</label>
+            <input id="cienciaParceiro" placeholder="Nome completo">
+          </div>
+          <div>
+            <label>Documento</label>
+            <input id="cienciaDoc" placeholder="CPF/CNPJ">
+          </div>
+        </div>
+
+        <p style="font-size:13px; color:#334155; margin-top:12px;">
+          Declaro ciência do estoque consignado acima, comprometendo-me a informar as vendas, conservar os produtos em minha guarda e devolver ou acertar o saldo quando solicitado.
+        </p>
+
+        <div class="signatures">
+          <div class="sig">
+            Assinatura do parceiro<br>
+            <span id="sigParceiroNome">Parceiro</span>
+          </div>
+          <div class="sig">
+            Assinatura Spray Precision<br>
+            <span id="sigResponsavel">Responsável</span>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="print-summary">
+    <div class="print-page">
+      <div class="p-header">
+        <div class="p-title">
+          <h1>Resumo de Estoque Consignado - Bicos SPCV</h1>
+          <p>Spray Precision | Documento resumido para conferência, assinatura e arquivo.</p>
+        </div>
+        <div class="p-meta">
+          <div class="p-box"><small>Data</small><strong id="pData">-</strong></div>
+          <div class="p-box"><small>Atualizado em</small><strong id="pAtualizado">-</strong></div>
+          <div class="p-box"><small>Parceiro</small><strong id="pParceiro">-</strong></div>
+          <div class="p-box"><small>Telefone</small><strong id="pTelefone">-</strong></div>
+        </div>
+      </div>
+
+      <div class="p-section">
+        <h2>1. Identificação e condições comerciais</h2>
+        <div class="p-grid">
+          <div class="p-box"><small>CPF/CNPJ parceiro</small><strong id="pDocumento">-</strong></div>
+          <div class="p-box"><small>Responsável Spray</small><strong id="pResponsavel">-</strong></div>
+          <div class="p-box"><small>Preço padrão</small><strong id="pPrecoPadrao">-</strong></div>
+          <div class="p-box"><small>Comissão padrão</small><strong id="pComissaoPadrao">-</strong></div>
+          <div class="p-box"><small>Preço mínimo</small><strong id="pPrecoMinimo">-</strong></div>
+          <div class="p-box"><small>Comissão no mínimo</small><strong id="pComissaoMinima">-</strong></div>
+        </div>
+        <div class="p-note">
+          Comissão em valor bruto. Caso seja necessária emissão de nota fiscal de comissão, retenção ou outro encargo para formalização do pagamento, os respectivos valores poderão ser descontados da comissão do parceiro.
+        </div>
+      </div>
+
+      <div class="p-section">
+        <h2>2. Estoque consignado</h2>
+        <table class="p-table">
+          <thead>
+            <tr>
+              <th>Modelo</th>
+              <th>Cor</th>
+              <th>Entregue</th>
+              <th>Vendido</th>
+              <th>Devolvido</th>
+              <th>Saldo</th>
+              <th>Preço venda</th>
+              <th>Comissão/un</th>
+              <th>Comissão total</th>
+            </tr>
+          </thead>
+          <tbody id="pEstoqueBody"></tbody>
+        </table>
+      </div>
+
+      <div class="p-section">
+        <h2>3. Totais do lote</h2>
+        <div class="p-grid">
+          <div class="p-box"><small>Total entregue</small><strong id="pTotalEntregue">0</strong></div>
+          <div class="p-box"><small>Total vendido</small><strong id="pTotalVendido">0</strong></div>
+          <div class="p-box"><small>Total devolvido</small><strong id="pTotalDevolvido">0</strong></div>
+          <div class="p-box"><small>Saldo em estoque</small><strong id="pTotalSaldo">0</strong></div>
+          <div class="p-box"><small>Valor estoque em saldo</small><strong id="pValorSaldo">R$ 0,00</strong></div>
+          <div class="p-box"><small>Status</small><strong id="pStatus">OK</strong></div>
+        </div>
+        <div class="p-grid four" style="margin-top:5px;">
+          <div class="p-box"><small>Valor vendido</small><strong id="pValorVendido">R$ 0,00</strong></div>
+          <div class="p-box"><small>Comissão bruta</small><strong id="pComissaoBruta">R$ 0,00</strong></div>
+          <div class="p-box"><small>Desconto/imposto comissão</small><strong id="pDescontoComissao">0%</strong></div>
+          <div class="p-box"><small>Comissão líquida estimada</small><strong id="pComissaoLiquida">R$ 0,00</strong></div>
+        </div>
+      </div>
+
+      <div class="p-section" id="pVendasSection">
+        <h2>4. Vendas registradas</h2>
+        <table class="p-table">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Cliente/produtor</th>
+              <th>Modelo</th>
+              <th>Cor</th>
+              <th>Qtd</th>
+              <th>Preço/un</th>
+              <th>Comissão/un</th>
+              <th>Observação</th>
+            </tr>
+          </thead>
+          <tbody id="pVendasBody"></tbody>
+        </table>
+      </div>
+
+      <div class="p-section">
+        <h2>5. Ciência e responsabilidade</h2>
+        <p class="p-declare">
+          Declaro ciência do estoque consignado acima, comprometendo-me a informar as vendas, conservar os produtos em minha guarda e devolver ou acertar o saldo quando solicitado.
+        </p>
+        <div class="p-signatures">
+          <div class="p-sign">
+            Assinatura do parceiro<br>
+            <strong id="pCienciaParceiro">-</strong><br>
+            <span id="pCienciaDoc" class="muted">-</span>
+          </div>
+          <div class="p-sign">
+            Assinatura Spray Precision<br>
+            <strong id="pAssinaturaResponsavel">-</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-footer">
+        <span>Documento gerado em ambiente local pelo controle de estoque Spray Precision.</span>
+        <span id="pRodape">-</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const KEY = "spray_controle_estoque_spcv_summary_pdf_v4";
+
+    const BICOS = [
+      { modelo: "SPCV 80-0.1", cor: "Laranja" },
+      { modelo: "SPCV 80-0.134", cor: "Marrom" },
+      { modelo: "SPCV 80-0.15", cor: "Verde" },
+      { modelo: "SPCV 80-0.175", cor: "Cinza" },
+      { modelo: "SPCV 80-0.2", cor: "Amarelo" },
+      { modelo: "SPCV 80-0.25", cor: "Roxo" },
+      { modelo: "SPCV 80-0.3", cor: "Azul" },
+      { modelo: "SPCV 80-0.4", cor: "Vermelho" },
+    ];
+
+    const fieldIds = [
+      "dataControle","parceiro","documento","telefone","precoPadrao","comissaoPadrao",
+      "precoMinimo","comissaoMinima","descontoComissao","responsavel","observacoes",
+      "cienciaParceiro","cienciaDoc"
+    ];
+
+    function dinheiro(v) {
+      return Number(v || 0).toLocaleString("pt-BR", { style:"currency", currency:"BRL" });
+    }
+
+    function numero(v) {
+      return Number(v || 0).toLocaleString("pt-BR", { maximumFractionDigits: 2 });
+    }
+
+    function dataBR(iso) {
+      if (!iso) return "-";
+      const [y,m,d] = iso.split("-");
+      return `${d}/${m}/${y}`;
+    }
+
+    function hoje() {
+      const d = new Date();
+      const off = d.getTimezoneOffset() * 60000;
+      return new Date(d - off).toISOString().slice(0,10);
+    }
+
+    function val(id) {
+      return document.getElementById(id)?.value || "";
+    }
+
+    function setVal(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.value = value ?? "";
+    }
+
+    function bicoPorModelo(modelo) {
+      return BICOS.find(b => b.modelo === modelo) || BICOS[0];
+    }
+
+    function optionsModelos(selected = "") {
+      return BICOS.map(b => `<option value="${b.modelo}" ${b.modelo === selected ? "selected" : ""}>${b.modelo}</option>`).join("");
+    }
+
+    function atualizarLinhaPorModelo(tr) {
+      const modelo = tr.querySelector(".modelo").value;
+      const bico = bicoPorModelo(modelo);
+      tr.querySelector(".corText").textContent = bico.cor;
+      tr.dataset.cor = bico.cor;
+    }
+
+    function adicionarLinha(item = {}) {
+      const tr = document.createElement("tr");
+      const precoPadrao = Number(val("precoPadrao") || 45);
+      const comissaoPadrao = Number(val("comissaoPadrao") || 15);
+      const modelo = item.modelo || BICOS[0].modelo;
+      const bico = bicoPorModelo(modelo);
+
+      tr.dataset.cor = item.cor || bico.cor;
+
+      tr.innerHTML = `
+        <td><select class="modelo">${optionsModelos(modelo)}</select></td>
+        <td><span class="color-pill corText">${item.cor || bico.cor}</span></td>
+        <td><input class="entregue" type="number" step="1" min="0" value="${item.entregue ?? 0}"></td>
+        <td><input class="vendido" type="number" step="1" min="0" value="${item.vendido ?? 0}"></td>
+        <td><input class="devolvido" type="number" step="1" min="0" value="${item.devolvido ?? 0}"></td>
+        <td class="saldo">0</td>
+        <td><input class="preco" type="number" step="0.01" value="${item.preco ?? precoPadrao}"></td>
+        <td><input class="comissao" type="number" step="0.01" value="${item.comissao ?? comissaoPadrao}"></td>
+        <td class="comissaoTotal">R$ 0,00</td>
+        <td class="no-print"><button class="danger" onclick="this.closest('tr').remove(); atualizar();">Remover</button></td>
+      `;
+
+      document.getElementById("estoqueBody").appendChild(tr);
+
+      tr.querySelector(".modelo").addEventListener("change", () => {
+        atualizarLinhaPorModelo(tr);
+        atualizar();
+      });
+
+      tr.querySelectorAll("input").forEach(i => i.addEventListener("input", atualizar));
+      atualizarLinhaPorModelo(tr);
+      atualizar();
+    }
+
+    function adicionarVenda(venda = {}) {
+      const tr = document.createElement("tr");
+      const modelo = venda.modelo || BICOS[0].modelo;
+      const bico = bicoPorModelo(modelo);
+      tr.dataset.cor = venda.cor || bico.cor;
+
+      tr.innerHTML = `
+        <td><input class="vData" type="date" value="${venda.data || hoje()}"></td>
+        <td><input class="vCliente" value="${venda.cliente || ""}" placeholder="Nome do cliente"></td>
+        <td><select class="vModelo">${optionsModelos(modelo)}</select></td>
+        <td><span class="color-pill vCorText">${venda.cor || bico.cor}</span></td>
+        <td><input class="vQtd" type="number" step="1" min="0" value="${venda.qtd ?? 0}"></td>
+        <td><input class="vPreco" type="number" step="0.01" value="${venda.preco ?? val("precoPadrao")}"></td>
+        <td><input class="vComissao" type="number" step="0.01" value="${venda.comissao ?? val("comissaoPadrao")}"></td>
+        <td><input class="vObs" value="${venda.obs || ""}" placeholder="Pago, pendente, NF, etc."></td>
+        <td class="no-print"><button class="danger" onclick="this.closest('tr').remove(); atualizar();">Remover</button></td>
+      `;
+
+      document.getElementById("vendasBody").appendChild(tr);
+
+      tr.querySelector(".vModelo").addEventListener("change", () => {
+        const b = bicoPorModelo(tr.querySelector(".vModelo").value);
+        tr.dataset.cor = b.cor;
+        tr.querySelector(".vCorText").textContent = b.cor;
+        atualizar();
+      });
+
+      tr.querySelectorAll("input").forEach(i => i.addEventListener("input", atualizar));
+      atualizar();
+    }
+
+    function inserirTodosModelos() {
+      BICOS.forEach(b => adicionarLinha({ modelo: b.modelo, cor: b.cor, entregue: 0 }));
+    }
+
+    function zerarQuantidades() {
+      if (!confirm("Zerar entregue, vendido e devolvido de todas as linhas?")) return;
+      document.querySelectorAll(".entregue,.vendido,.devolvido").forEach(i => i.value = 0);
+      atualizar();
+    }
+
+    function linhasEstoque() {
+      return [...document.querySelectorAll("#estoqueBody tr")].map(tr => {
+        const b = bicoPorModelo(tr.querySelector(".modelo").value);
+        return {
+          modelo: tr.querySelector(".modelo").value,
+          cor: b.cor,
+          entregue: Number(tr.querySelector(".entregue").value || 0),
+          vendido: Number(tr.querySelector(".vendido").value || 0),
+          devolvido: Number(tr.querySelector(".devolvido").value || 0),
+          preco: Number(tr.querySelector(".preco").value || 0),
+          comissao: Number(tr.querySelector(".comissao").value || 0),
+        };
+      });
+    }
+
+    function linhasVendas() {
+      return [...document.querySelectorAll("#vendasBody tr")].map(tr => {
+        const b = bicoPorModelo(tr.querySelector(".vModelo").value);
+        return {
+          data: tr.querySelector(".vData").value,
+          cliente: tr.querySelector(".vCliente").value,
+          modelo: tr.querySelector(".vModelo").value,
+          cor: b.cor,
+          qtd: Number(tr.querySelector(".vQtd").value || 0),
+          preco: Number(tr.querySelector(".vPreco").value || 0),
+          comissao: Number(tr.querySelector(".vComissao").value || 0),
+          obs: tr.querySelector(".vObs").value,
+        };
+      });
+    }
+
+    function atualizarSemVendas() {
+      const count = document.querySelectorAll("#vendasBody tr").length;
+      document.getElementById("semVendas").style.display = count === 0 ? "block" : "none";
+    }
+
+    function preencherPrint(totais) {
+      document.getElementById("pData").textContent = dataBR(val("dataControle"));
+      document.getElementById("pAtualizado").textContent = new Date().toLocaleString("pt-BR");
+      document.getElementById("pParceiro").textContent = val("parceiro") || "-";
+      document.getElementById("pTelefone").textContent = val("telefone") || "-";
+      document.getElementById("pDocumento").textContent = val("documento") || "-";
+      document.getElementById("pResponsavel").textContent = val("responsavel") || "-";
+      document.getElementById("pPrecoPadrao").textContent = dinheiro(val("precoPadrao"));
+      document.getElementById("pComissaoPadrao").textContent = dinheiro(val("comissaoPadrao"));
+      document.getElementById("pPrecoMinimo").textContent = dinheiro(val("precoMinimo"));
+      document.getElementById("pComissaoMinima").textContent = dinheiro(val("comissaoMinima"));
+
+      const estoqueBody = document.getElementById("pEstoqueBody");
+      estoqueBody.innerHTML = "";
+
+      const estoque = linhasEstoque().filter(i => (i.entregue || i.vendido || i.devolvido));
+      const estoqueParaPrint = estoque.length ? estoque : linhasEstoque();
+
+      estoqueParaPrint.forEach(i => {
+        const saldo = i.entregue - i.vendido - i.devolvido;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${i.modelo}</td>
+          <td><span class="p-badge">${i.cor}</span></td>
+          <td>${i.entregue}</td>
+          <td>${i.vendido}</td>
+          <td>${i.devolvido}</td>
+          <td>${saldo}</td>
+          <td>${dinheiro(i.preco)}</td>
+          <td>${dinheiro(i.comissao)}</td>
+          <td>${dinheiro(i.vendido * i.comissao)}</td>
+        `;
+        estoqueBody.appendChild(tr);
+      });
+
+      document.getElementById("pTotalEntregue").textContent = totais.totalEntregue;
+      document.getElementById("pTotalVendido").textContent = totais.totalVendido;
+      document.getElementById("pTotalDevolvido").textContent = totais.totalDevolvido;
+      document.getElementById("pTotalSaldo").textContent = totais.totalSaldo;
+      document.getElementById("pValorSaldo").textContent = dinheiro(totais.valorSaldo);
+      document.getElementById("pStatus").textContent = totais.alerta ? "Verificar saldo" : "OK";
+      document.getElementById("pValorVendido").textContent = dinheiro(totais.valorVendido);
+      document.getElementById("pComissaoBruta").textContent = dinheiro(totais.comissaoBruta);
+      document.getElementById("pDescontoComissao").textContent = `${numero(val("descontoComissao"))}%`;
+      document.getElementById("pComissaoLiquida").textContent = dinheiro(totais.comissaoLiquida);
+
+      const vendasBody = document.getElementById("pVendasBody");
+      vendasBody.innerHTML = "";
+      const vendas = linhasVendas().filter(v => v.qtd > 0 || v.cliente || v.obs);
+
+      if (vendas.length === 0) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="8" class="muted">Nenhuma venda registrada neste controle.</td>`;
+        vendasBody.appendChild(tr);
+      } else {
+        vendas.forEach(v => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${dataBR(v.data)}</td>
+            <td>${v.cliente || "-"}</td>
+            <td>${v.modelo}</td>
+            <td><span class="p-badge">${v.cor}</span></td>
+            <td>${v.qtd}</td>
+            <td>${dinheiro(v.preco)}</td>
+            <td>${dinheiro(v.comissao)}</td>
+            <td>${v.obs || "-"}</td>
+          `;
+          vendasBody.appendChild(tr);
+        });
+      }
+
+      document.getElementById("pCienciaParceiro").textContent = val("cienciaParceiro") || val("parceiro") || "-";
+      document.getElementById("pCienciaDoc").textContent = val("cienciaDoc") || val("documento") || "-";
+      document.getElementById("pAssinaturaResponsavel").textContent = val("responsavel") || "-";
+      document.getElementById("pRodape").textContent = `Parceiro: ${val("parceiro") || "-"} | Saldo: ${totais.totalSaldo} bicos`;
+    }
+
+    function calcularTotais() {
+      let totalEntregue = 0, totalVendido = 0, totalDevolvido = 0, totalSaldo = 0;
+      let valorVendido = 0, valorSaldo = 0, comissaoBruta = 0;
+      let alerta = false;
+
+      [...document.querySelectorAll("#estoqueBody tr")].forEach(tr => {
+        atualizarLinhaPorModelo(tr);
+
+        const entregue = Number(tr.querySelector(".entregue").value || 0);
+        const vendido = Number(tr.querySelector(".vendido").value || 0);
+        const devolvido = Number(tr.querySelector(".devolvido").value || 0);
+        const preco = Number(tr.querySelector(".preco").value || 0);
+        const comissao = Number(tr.querySelector(".comissao").value || 0);
+        const saldo = entregue - vendido - devolvido;
+        const comissaoTotal = vendido * comissao;
+
+        tr.querySelector(".saldo").textContent = saldo;
+        tr.querySelector(".comissaoTotal").textContent = dinheiro(comissaoTotal);
+
+        if (saldo < 0) alerta = true;
+
+        totalEntregue += entregue;
+        totalVendido += vendido;
+        totalDevolvido += devolvido;
+        totalSaldo += saldo;
+        valorVendido += vendido * preco;
+        valorSaldo += Math.max(saldo, 0) * preco;
+        comissaoBruta += comissaoTotal;
+      });
+
+      linhasVendas().forEach(v => {
+        valorVendido += v.qtd * v.preco;
+        comissaoBruta += v.qtd * v.comissao;
+      });
+
+      const desc = Number(val("descontoComissao") || 0) / 100;
+      const comissaoLiquida = comissaoBruta * (1 - desc);
+
+      return {
+        totalEntregue, totalVendido, totalDevolvido, totalSaldo,
+        valorVendido, valorSaldo, comissaoBruta, comissaoLiquida, alerta
+      };
+    }
+
+    function atualizar() {
+      const totais = calcularTotais();
+
+      document.getElementById("mEntregue").textContent = totais.totalEntregue;
+      document.getElementById("mVendido").textContent = totais.totalVendido;
+      document.getElementById("mDevolvido").textContent = totais.totalDevolvido;
+      document.getElementById("mSaldo").textContent = totais.totalSaldo;
+      document.getElementById("mComissao").textContent = dinheiro(totais.comissaoBruta);
+      document.getElementById("mValorVendido").textContent = dinheiro(totais.valorVendido);
+      document.getElementById("mComissaoLiquida").textContent = dinheiro(totais.comissaoLiquida);
+      document.getElementById("mValorSaldo").textContent = dinheiro(totais.valorSaldo);
+      document.getElementById("mAtualizado").textContent = new Date().toLocaleString("pt-BR");
+      document.getElementById("mStatus").textContent = totais.alerta ? "Verificar saldo negativo" : "OK";
+      document.getElementById("mStatus").style.color = totais.alerta ? "#b42318" : "#0f5132";
+
+      document.getElementById("sigParceiroNome").textContent = val("cienciaParceiro") || val("parceiro") || "Parceiro";
+      document.getElementById("sigResponsavel").textContent = val("responsavel") || "Responsável";
+
+      atualizarSemVendas();
+      preencherPrint(totais);
+      salvarLocal(false);
+    }
+
+    function imprimirResumo() {
+      atualizar();
+      setTimeout(() => window.print(), 50);
+    }
+
+    function coletar() {
+      const data = {};
+      fieldIds.forEach(id => data[id] = val(id));
+      data.estoque = linhasEstoque();
+      data.vendas = linhasVendas();
+      data.salvoEm = new Date().toISOString();
+      return data;
+    }
+
+    function aplicar(data) {
+      if (!data) return;
+      fieldIds.forEach(id => setVal(id, data[id]));
+      document.getElementById("estoqueBody").innerHTML = "";
+      document.getElementById("vendasBody").innerHTML = "";
+      (data.estoque || []).forEach(adicionarLinha);
+      (data.vendas || []).forEach(adicionarVenda);
+      atualizar();
+    }
+
+    function salvarLocal(alerta = true) {
+      localStorage.setItem(KEY, JSON.stringify(coletar()));
+      if (alerta) alert("Controle salvo neste navegador.");
+    }
+
+    function carregarLocal() {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return false;
+      try {
+        aplicar(JSON.parse(raw));
+        return true;
+      } catch(e) {
+        console.warn(e);
+        return false;
+      }
+    }
+
+    function limparTudo() {
+      if (!confirm("Deseja limpar tudo?")) return;
+      localStorage.removeItem(KEY);
+      location.reload();
+    }
+
+    function baixarJSON() {
+      const blob = new Blob([JSON.stringify(coletar(), null, 2)], {type:"application/json"});
+      baixarBlob(blob, `controle_estoque_spcv_${(val("parceiro")||"parceiro").replace(/[^\w\-]+/g,"_")}_${hoje()}.json`);
+    }
+
+    function baixarCSV() {
+      const rows = [];
+      rows.push(["TIPO","DATA","PARCEIRO","MODELO","COR","ENTREGUE","VENDIDO","DEVOLVIDO","SALDO","PRECO","COMISSAO_UN","COMISSAO_TOTAL","CLIENTE","OBS"]);
+
+      linhasEstoque().forEach(i => {
+        const saldo = i.entregue - i.vendido - i.devolvido;
+        rows.push(["ESTOQUE", val("dataControle"), val("parceiro"), i.modelo, i.cor, i.entregue, i.vendido, i.devolvido, saldo, i.preco, i.comissao, i.vendido*i.comissao, "", ""]);
+      });
+
+      linhasVendas().forEach(v => {
+        rows.push(["VENDA", v.data, val("parceiro"), v.modelo, v.cor, "", v.qtd, "", "", v.preco, v.comissao, v.qtd*v.comissao, v.cliente, v.obs]);
+      });
+
+      const csv = rows.map(r => r.map(c => `"${String(c ?? "").replace(/"/g,'""')}"`).join(";")).join("\n");
+      const blob = new Blob(["\ufeff" + csv], {type:"text/csv;charset=utf-8"});
+      baixarBlob(blob, `controle_estoque_spcv_${(val("parceiro")||"parceiro").replace(/[^\w\-]+/g,"_")}_${hoje()}.csv`);
+    }
+
+    function baixarBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("dataControle").value = hoje();
+      fieldIds.forEach(id => document.getElementById(id)?.addEventListener("input", atualizar));
+
+      const carregou = carregarLocal();
+      if (!carregou) {
+        inserirTodosModelos();
+      }
+      atualizar();
+    });
+  </script>
+</body>
+</html>
