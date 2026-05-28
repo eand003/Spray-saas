@@ -42,6 +42,7 @@ const Visits = ({ user, preselectedLeadForVisit, onClearPreselectedLead }) => {
   });
 
   const [attachedPhoto, setAttachedPhoto] = useState(null); // stores photo url/blob
+  const [lightboxPhoto, setLightboxPhoto] = useState(null); // fullscreen photo viewer
 
   const isUserAdmin = user?.user_metadata?.role === 'admin';
 
@@ -492,12 +493,27 @@ const Visits = ({ user, preselectedLeadForVisit, onClearPreselectedLead }) => {
               )}
 
               {v.photoUrl && (
-                <div style={{ marginTop: '12px' }}>
-                  <img 
-                    src={v.photoUrl} 
-                    alt="Foto da Visita" 
-                    style={{ width: '100%', maxHeight: '180px', objectFit: 'cover', borderRadius: 'var(--radius-sm)' }} 
+                <div
+                  style={{ marginTop: '12px', position: 'relative', cursor: 'zoom-in' }}
+                  onClick={() => setLightboxPhoto(v.photoUrl)}
+                  title="Toque para ampliar"
+                >
+                  <img
+                    src={v.photoUrl}
+                    alt="Foto da Visita"
+                    style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', borderRadius: 'var(--radius-sm)', display: 'block' }}
                   />
+                  {/* Visual hint overlay */}
+                  <div style={{
+                    position: 'absolute', bottom: '8px', right: '8px',
+                    backgroundColor: 'rgba(0,0,0,0.55)', color: '#fff',
+                    borderRadius: '20px', padding: '4px 10px',
+                    fontSize: '11px', fontWeight: 600,
+                    display: 'flex', alignItems: 'center', gap: '4px',
+                    backdropFilter: 'blur(4px)'
+                  }}>
+                    <span style={{ fontSize: '13px' }}>🔍</span> Toque para ampliar
+                  </div>
                 </div>
               )}
 
@@ -523,6 +539,64 @@ const Visits = ({ user, preselectedLeadForVisit, onClearPreselectedLead }) => {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* ======================= FULLSCREEN PHOTO LIGHTBOX ======================= */}
+      {lightboxPhoto && (
+        <div
+          onClick={() => setLightboxPhoto(null)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            backgroundColor: 'rgba(0,0,0,0.92)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '16px',
+            cursor: 'zoom-out'
+          }}
+        >
+          {/* Close button */}
+          <button
+            onClick={() => setLightboxPhoto(null)}
+            style={{
+              position: 'absolute', top: '16px', right: '16px',
+              width: '40px', height: '40px',
+              borderRadius: '50%',
+              backgroundColor: 'rgba(255,255,255,0.15)',
+              color: '#fff',
+              fontSize: '20px',
+              fontWeight: 700,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              border: '1px solid rgba(255,255,255,0.3)',
+              cursor: 'pointer',
+              zIndex: 10000
+            }}
+            title="Fechar"
+          >
+            ✕
+          </button>
+
+          {/* Full image */}
+          <img
+            src={lightboxPhoto}
+            alt="Foto da Visita"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: '100%',
+              maxHeight: '90vh',
+              objectFit: 'contain',
+              borderRadius: '8px',
+              boxShadow: '0 8px 40px rgba(0,0,0,0.6)'
+            }}
+          />
+
+          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', marginTop: '16px' }}>
+            Toque fora da foto para fechar
+          </p>
         </div>
       )}
 
