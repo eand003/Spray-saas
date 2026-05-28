@@ -405,6 +405,29 @@ const Visits = ({ user, preselectedLeadForVisit, onClearPreselectedLead }) => {
     }
   };
 
+  const handleDeletePhoto = async (visitId) => {
+    const confirmDelete = window.confirm('Tem certeza que deseja excluir esta foto? Esta ação não pode ser desfeita.');
+    if (!confirmDelete) return;
+
+    try {
+      setLoading(true);
+      // Remove from visit_attachments table
+      const { error } = await supabase
+        .from('visit_attachments')
+        .delete()
+        .eq('visit_id', visitId);
+
+      if (error) throw error;
+
+      setLightboxPhoto(null);
+      fetchVisits(); // Refresh list to remove photo from card
+    } catch (err) {
+      alert('Erro ao excluir foto: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
       <div className="flex justify-between align-center" style={{ marginBottom: '20px' }}>
@@ -495,7 +518,7 @@ const Visits = ({ user, preselectedLeadForVisit, onClearPreselectedLead }) => {
               {v.photoUrl && (
                 <div
                   style={{ marginTop: '12px', position: 'relative', cursor: 'zoom-in' }}
-                  onClick={() => setLightboxPhoto(v.photoUrl)}
+                  onClick={() => setLightboxPhoto({ url: v.photoUrl, visitId: v.id })}
                   title="Toque para ampliar"
                 >
                   <img
@@ -550,7 +573,7 @@ const Visits = ({ user, preselectedLeadForVisit, onClearPreselectedLead }) => {
             position: 'fixed',
             inset: 0,
             zIndex: 9999,
-            backgroundColor: 'rgba(0,0,0,0.92)',
+            backgroundColor: 'rgba(0,0,0,0.93)',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -559,7 +582,7 @@ const Visits = ({ user, preselectedLeadForVisit, onClearPreselectedLead }) => {
             cursor: 'zoom-out'
           }}
         >
-          {/* Close button */}
+          {/* Close button — top right */}
           <button
             onClick={() => setLightboxPhoto(null)}
             style={{
@@ -580,23 +603,55 @@ const Visits = ({ user, preselectedLeadForVisit, onClearPreselectedLead }) => {
             ✕
           </button>
 
-          {/* Full image */}
+          {/* Full image — stop propagation so clicking image doesn't close */}
           <img
-            src={lightboxPhoto}
+            src={lightboxPhoto.url}
             alt="Foto da Visita"
             onClick={(e) => e.stopPropagation()}
             style={{
               maxWidth: '100%',
-              maxHeight: '90vh',
+              maxHeight: '80vh',
               objectFit: 'contain',
               borderRadius: '8px',
               boxShadow: '0 8px 40px rgba(0,0,0,0.6)'
             }}
           />
 
-          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', marginTop: '16px' }}>
-            Toque fora da foto para fechar
-          </p>
+          {/* Bottom action bar */}
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              marginTop: '20px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '12px'
+            }}
+          >
+            {/* Delete photo button */}
+            <button
+              onClick={() => handleDeletePhoto(lightboxPhoto.visitId)}
+              disabled={loading}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '8px',
+                padding: '10px 24px',
+                borderRadius: '24px',
+                backgroundColor: 'rgba(239,68,68,0.15)',
+                color: '#f87171',
+                border: '1px solid rgba(239,68,68,0.4)',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: 600
+              }}
+            >
+              <Trash2 size={16} />
+              {loading ? 'Excluindo...' : 'Excluir esta foto'}
+            </button>
+
+            <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '11px' }}>
+              Toque fora da foto para fechar
+            </p>
+          </div>
         </div>
       )}
 
