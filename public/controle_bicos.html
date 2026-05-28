@@ -354,8 +354,12 @@
     .print-summary { display: none; }
 
     @media print {
-      body { padding-bottom: 0; background: #fff; }
-      .screen-area, .action-bar { display: none !important; }
+      body { padding-bottom: 0; background: #fff; margin: 0; }
+      /* Hide ALL screen UI */
+      .app-header,
+      .screen-area,
+      .action-bar { display: none !important; }
+      /* Show only the print template */
       .print-summary { display: block !important; font-family: Arial, Helvetica, sans-serif; }
       @page { size: A4 landscape; margin: 8mm; }
       * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -382,6 +386,7 @@
       .p-footer { display: flex; justify-content: space-between; gap: 12px; margin-top: 6px; font-size: 8.5px; color: #64748b; }
       .muted { color: #64748b; }
     }
+
 
     /* ── DESKTOP TWEAKS ── */
     @media (min-width: 640px) {
