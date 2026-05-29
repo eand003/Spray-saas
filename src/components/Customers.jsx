@@ -270,7 +270,7 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
       working_speed_km_h: sprayer.working_speed_km_h || '',
       kit_status: sprayer.kit_status || 'no_kit',
       notes: sprayer.notes || '',
-      farm_id: selectedCustomer.id // Bypass DB schema constraint
+      farm_id: sprayer.farm_id || (farms[0]?.id || '')
     });
     setIsAddSprayerOpen(true);
   };
@@ -283,6 +283,8 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
     }
     try {
       setLoading(true);
+      const selectedFarmId = farms.find(f => f.id === sprayerForm.farm_id)?.id || farms[0]?.id || null;
+
       const payload = {
         brand: sprayerForm.brand,
         model: sprayerForm.model,
@@ -296,7 +298,8 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
         flow_rate_l_ha: sprayerForm.flow_rate_l_ha ? parseFloat(sprayerForm.flow_rate_l_ha) : null,
         working_speed_km_h: sprayerForm.working_speed_km_h ? parseFloat(sprayerForm.working_speed_km_h) : null,
         kit_status: sprayerForm.kit_status,
-        notes: sprayerForm.notes
+        notes: sprayerForm.notes,
+        farm_id: selectedFarmId
       };
 
       if (editingSprayer) {
@@ -305,7 +308,6 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
       } else {
         const { error } = await supabase.from('sprayers').insert({
           customer_id: selectedCustomer.id,
-          farm_id: selectedCustomer.id, // Bypass DB fkey constraint
           ...payload
         });
         if (error) throw error;
@@ -357,7 +359,7 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
       warranty_until: kit.warranty_until || '',
       status: kit.status || 'installed',
       technical_notes: kit.technical_notes || '',
-      farm_id: selectedCustomer.id // Bypass DB fkey constraint
+      farm_id: kit.farm_id || (farms[0]?.id || '')
     });
     setIsAddKitOpen(true);
   };
@@ -371,6 +373,9 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
     try {
       setLoading(true);
       
+      const selectedSprayer = sprayers.find(s => s.id === kitForm.sprayer_id);
+      const selectedFarmId = selectedSprayer?.farm_id || farms[0]?.id || null;
+
       const payload = {
         sprayer_id: kitForm.sprayer_id,
         kit_number: kitForm.kit_number,
@@ -381,7 +386,8 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
         installation_date: kitForm.installation_date || null,
         warranty_until: kitForm.warranty_until || null,
         status: kitForm.status,
-        technical_notes: kitForm.technical_notes
+        technical_notes: kitForm.technical_notes,
+        farm_id: selectedFarmId
       };
 
       if (editingKit) {
@@ -390,7 +396,6 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
       } else {
         const { error: kitErr } = await supabase.from('kits').insert({
           customer_id: selectedCustomer.id,
-          farm_id: selectedCustomer.id, // Bypass DB fkey constraint
           seller_id: user.id,
           ...payload
         });
