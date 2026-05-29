@@ -774,10 +774,10 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
                           <div key={s.id} style={{ fontSize: '13px', padding: '8px 10px', backgroundColor: 'var(--gray-50)', borderRadius: '6px', borderLeft: s.kit_status === 'installed' ? '3px solid var(--primary)' : '3px solid var(--gray-300)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
                             <div style={{ minWidth: 0, flex: 1 }}>
                               <div style={{ fontWeight: '700', color: 'var(--gray-800)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                {idx + 1}. {s.brand} {s.model} {s.year ? `(${s.year})` : ''}
+                                {idx + 1}. {s.brand} {s.model} {s.boom_width_m ? `(${s.boom_width_m}m)` : ''} {s.year ? `(${s.year})` : ''}
                               </div>
                               <div style={{ color: 'var(--gray-500)', fontSize: '12px', marginTop: '2px' }}>
-                                Barra: {s.boom_width_m || '--'}m • {s.nozzle_count || '--'} bicos
+                                {s.nozzle_count || '--'} bicos
                               </div>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
@@ -941,7 +941,7 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
                     return (
                       <div key={s.id} className="mobile-card" style={{ borderLeft: s.kit_status === 'installed' ? '4px solid var(--primary)' : '4px solid var(--gray-400)' }}>
                         <div className="flex justify-between align-center">
-                          <h4 style={{ fontSize: '15px', fontWeight: 700 }}>{s.brand} {s.model}</h4>
+                          <h4 style={{ fontSize: '15px', fontWeight: 700 }}>{s.brand} {s.model} {s.boom_width_m ? `(${s.boom_width_m}m)` : ''}</h4>
                           <span className={`badge ${s.kit_status === 'installed' ? 'badge-won' : 'badge-no_fit'}`}>
                             {s.kit_status === 'installed' ? 'Com Kit SP' : 'Sem Kit'}
                           </span>
@@ -950,11 +950,9 @@ const Customers = ({ user, setCurrentTab, setPreselectedLeadForVisit }) => {
                           🚜 Fazenda: {farm ? farm.name : 'Sede'} {s.year ? `• Ano: ${s.year}` : ''}
                         </p>
                         <div className="detail-info-grid" style={{ borderTop: '1px solid var(--gray-200)' }}>
-                          <div><span style={{ color: 'var(--gray-600)' }}>Barra:</span> <strong>{s.boom_width_m || '--'} m</strong></div>
                           <div><span style={{ color: 'var(--gray-600)' }}>Bicos:</span> <strong>{s.nozzle_count || '--'} bicos</strong></div>
                           <div><span style={{ color: 'var(--gray-600)' }}>Espaço:</span> <strong>{s.nozzle_spacing_cm || '--'} cm</strong></div>
                           <div><span style={{ color: 'var(--gray-600)' }}>Modelo Bico:</span> <strong>{s.current_nozzle_model || '--'}</strong></div>
-                          <div><span style={{ color: 'var(--gray-600)' }}>Vazão Calda:</span> <strong>{s.flow_rate_l_ha || '--'} L/ha</strong></div>
                           <div><span style={{ color: 'var(--gray-600)' }}>Velocidade:</span> <strong>{s.working_speed_km_h || '--'} km/h</strong></div>
                           <div><span style={{ color: 'var(--gray-600)' }}>Nº Série:</span> <strong>{s.serial_number || '--'}</strong></div>
                           <div><span style={{ color: 'var(--gray-600)' }}>Monitor:</span> <strong>{s.controller_monitor || '--'}</strong></div>
